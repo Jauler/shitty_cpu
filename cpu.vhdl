@@ -35,7 +35,6 @@ ARCHITECTURE cpu OF cpu IS
 		);
 	END COMPONENT;
 
-	SIGNAL alu_out  : std_logic_vector(7 downto 0);
 	SIGNAL alu_zero : std_logic;
 	SIGNAL alu_en   : std_logic := '0';
 	COMPONENT alu IS
@@ -48,7 +47,7 @@ ARCHITECTURE cpu OF cpu IS
 	);
 	END COMPONENT;
 
-	SIGNAL counter : std_logic_vector(7 downto 0) := "00000000";
+	SIGNAL program_counter: std_logic_vector(7 downto 0) := "00000000";
 
 BEGIN
 	clk1 : clock port map (clk => clk);
@@ -71,7 +70,7 @@ BEGIN
 		in1 => reg_a_value,
 		in2 => reg_b_value,
 		en => alu_en,
-		result => alu_out,
+		result => cpu_bus,
 		zero => alu_zero);
 
 
@@ -79,8 +78,8 @@ BEGIN
 	VARIABLE current_counter : std_logic_vector(7 downto 0) := "00000000";
 	BEGIN
 		IF rising_edge(clk) THEN
-			current_counter := counter + 1;
-			counter <= current_counter;
+			current_counter := program_counter + 1;
+			program_counter <= current_counter;
 		END IF;
 		IF current_counter = 3 THEN
 			alu_en <= '1';
@@ -98,6 +97,7 @@ BEGIN
 			reg_b_set <= '1';
 		END IF;
 		IF current_counter = 7 THEN
+			cpu_bus <= "ZZZZZZZZ";
 			reg_b_set <= '0';
 			alu_en <= '1';
 		END IF;
