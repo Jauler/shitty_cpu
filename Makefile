@@ -3,6 +3,7 @@ SRC  = cpu.vhdl
 SRC += clock.vhdl
 SRC += register.vhdl
 SRC += alu.vhdl
+SRC += memory.vhdl
 
 FLAGS  = --ieee=synopsys
 FLAGS += -fexplicit

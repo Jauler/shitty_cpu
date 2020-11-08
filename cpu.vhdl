@@ -47,6 +47,18 @@ ARCHITECTURE cpu OF cpu IS
 	);
 	END COMPONENT;
 
+	SIGNAL mem_en : std_logic := '0';
+	SIGNAL mem_rw : std_logic := '0';
+	SIGNAL mem_addr : std_logic_vector(3 downto 0) := "0000";
+	COMPONENT memory IS
+		port(
+			data : INOUT std_logic_vector(7 downto 0);
+			addr : IN std_logic_vector(3 downto 0);
+			rw   : IN std_logic;
+			en   : IN std_logic
+		);
+	END COMPONENT;
+
 	SIGNAL program_counter: std_logic_vector(7 downto 0) := "00000000";
 
 BEGIN
@@ -66,13 +78,18 @@ BEGIN
 			en => reg_b_en,
 			set => reg_b_set);
 
-	alu_a : alu port map(
+	alu1 : alu port map(
 		in1 => reg_a_value,
 		in2 => reg_b_value,
 		en => alu_en,
 		result => cpu_bus,
 		zero => alu_zero);
 
+	mem1 : memory port map(
+		data => cpu_bus,
+		addr =>  mem_addr,
+		en => mem_en,
+		rw => mem_rw);
 
 	test : PROCESS(clk)
 	VARIABLE current_counter : std_logic_vector(7 downto 0) := "00000000";
@@ -82,28 +99,41 @@ BEGIN
 			program_counter <= current_counter;
 		END IF;
 		IF current_counter = 3 THEN
-			alu_en <= '1';
+			mem_rw <= '0';
+			mem_addr <= "0000";
+			cpu_bus <= x"AB";
+			mem_en <= '1';
 		END IF;
 		IF current_counter = 4 THEN
-			alu_en <= '0';
+			mem_rw <= '0';
+			mem_addr <= "0001";
+			cpu_bus <= x"BB";
+			mem_en <= '1';
 		END IF;
 		IF current_counter = 5 THEN
-			cpu_bus <= X"03";
-			reg_a_set <= '1';
+			mem_rw <= '0';
+			mem_addr <= "0010";
+			cpu_bus <= x"BC";
+			mem_en <= '1';
 		END IF;
 		IF current_counter = 6 THEN
-			reg_a_set <= '0';
-			cpu_bus <= X"02";
-			reg_b_set <= '1';
+			mem_rw <= '1';
+			mem_addr <= "0000";
+			cpu_bus <= "ZZZZZZZZ";
+			mem_en <= '1';
 		END IF;
 		IF current_counter = 7 THEN
+			mem_rw <= '1';
+			mem_addr <= "0001";
 			cpu_bus <= "ZZZZZZZZ";
-			reg_b_set <= '0';
-			alu_en <= '1';
+			mem_en <= '1';
+		END IF;
+		IF current_counter = 7 THEN
+			mem_en <= '0';
 		END IF;
 		IF current_counter = 8 THEN
-			reg_b_set <= '0';
-			alu_en <= '0';
+			mem_addr <= "0010";
+			mem_en <= '1';
 		END IF;
 	END PROCESS;
 
