@@ -4,6 +4,8 @@ SRC += clock.vhdl
 SRC += register.vhdl
 SRC += alu.vhdl
 SRC += memory.vhdl
+SRC += decoder.vhdl
+SRC += mux.vhdl
 
 FLAGS  = --ieee=synopsys
 FLAGS += -fexplicit
