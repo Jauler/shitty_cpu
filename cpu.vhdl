@@ -10,7 +10,8 @@ ENTITY cpu IS
 END ENTITY;
 
 ARCHITECTURE cpu OF cpu IS
-	SIGNAL cpu_bus : std_logic_vector(7 downto 0) := "ZZZZZZZZ";
+	SIGNAL addr_bus : std_logic_vector(7 downto 0) := "ZZZZZZZZ";
+	SIGNAL data_bus : std_logic_vector(7 downto 0) := "ZZZZZZZZ";
 
 	SIGNAL clk: std_logic;
 	COMPONENT clock IS
@@ -19,124 +20,148 @@ ARCHITECTURE cpu OF cpu IS
 		);
 	END COMPONENT;
 
-	SIGNAL reg_a_set   : std_logic := '0';
-	SIGNAL reg_a_en    : std_logic := '0';
-	SIGNAL reg_a_value : std_logic_vector(7 downto 0);
-	SIGNAL reg_b_set   : std_logic := '0';
-	SIGNAL reg_b_en    : std_logic := '0';
-	SIGNAL reg_b_value : std_logic_vector(7 downto 0);
-	COMPONENT cpu_register IS
-		port(
-			output : OUT std_logic_vector(7 downto 0);
-			value  : OUT std_logic_vector(7 downto 0);
-			input  : IN std_logic_vector(7 downto 0);
-			set    : IN std_logic;
-			en     : IN std_logic
-		);
-	END COMPONENT;
-
-	SIGNAL alu_zero : std_logic;
-	SIGNAL alu_en   : std_logic := '0';
-	COMPONENT alu IS
-	PORT(
-		in1    : IN std_logic_vector(7 downto 0);
-		in2    : IN std_logic_vector(7 downto 0);
-		en     : IN std_logic;
-		zero   : OUT std_logic;
-		result : OUT std_logic_vector(7 downto 0)
-	);
-	END COMPONENT;
-
-	SIGNAL mem_en : std_logic := '0';
-	SIGNAL mem_rw : std_logic := '0';
-	SIGNAL mem_addr : std_logic_vector(3 downto 0) := "0000";
+	SIGNAL mem_ce : std_logic := '0';
+	SIGNAL mem_oe : std_logic := '0';
+	SIGNAL mem_we : std_logic := '0';
 	COMPONENT memory IS
 		port(
 			data : INOUT std_logic_vector(7 downto 0);
-			addr : IN std_logic_vector(3 downto 0);
-			rw   : IN std_logic;
-			en   : IN std_logic
+			addr : IN std_logic_vector(7 downto 0);
+			ce   : IN std_logic;
+			we   : IN std_logic;
+			oe   : IN std_logic);
+	END COMPONENT;
+
+	SIGNAL reg_a_we : std_logic := '0';
+	SIGNAL reg_a_out: std_logic_vector(7 downto 0) := "00000000";
+	SIGNAL reg_b_we : std_logic := '0';
+	SIGNAL reg_b_out: std_logic_vector(7 downto 0) := "00000000";
+	COMPONENT reg IS
+		port(
+			clk    : IN std_logic;
+			we     : IN std_logic;
+			data   : IN std_logic_vector(7 downto 0);
+			output : OUT std_logic_vector(7 downto 0) := "00000000"
 		);
 	END COMPONENT;
 
-	SIGNAL program_counter: std_logic_vector(7 downto 0) := "00000000";
+	SIGNAL alu_out    : std_logic_vector(7 downto 0);
+	SIGNAL alu_zero   : std_logic;
+	COMPONENT alu IS
+		port(
+			clk    : IN std_logic;
+			in1    : IN std_logic_vector(7 downto 0);
+			in2    : IN std_logic_vector(7 downto 0);
+			sum    : OUT std_logic_vector(7 downto 0);
+			zero   : OUT std_logic
+		);
+	END COMPONENT;
+
+	SIGNAL data_mux_sel : std_logic_vector(1 downto 0) := "00";
+	SIGNAL data_mux_en  : std_logic;
+	SIGNAL addr_mux_sel : std_logic_vector(1 downto 0) := "00";
+	SIGNAL addr_mux_en  : std_logic;
+	COMPONENT mux IS
+		port(
+			in1 : IN std_logic_vector(7 downto 0) := "00000000";
+			in2 : IN std_logic_vector(7 downto 0) := "00000000";
+			in3 : IN std_logic_vector(7 downto 0) := "00000000";
+
+			en   : IN std_logic;
+			sel  : IN std_logic_vector(1 downto 0);
+
+			output : OUT std_logic_vector(7 downto 0)
+		);
+	END COMPONENT;
+
+	COMPONENT decoder IS
+		port(
+			-- clock
+			clk : IN std_logic;
+
+			-- busses
+			data_bus : INOUT std_logic_vector(7 downto 0) := "ZZZZZZZZ";
+			addr_bus : INOUT std_logic_vector(7 downto 0) := "ZZZZZZZZ";
+
+			-- memory control
+			mem_ce : OUT std_logic;
+			mem_oe : OUT std_logic;
+			mem_we : OUT std_logic;
+
+			-- register control
+			reg_a_we : OUT std_logic;
+			reg_b_we : OUT std_logic;
+
+			-- ALU
+			alu_zero : IN std_logic;
+
+			-- muxes control
+			data_mux_sel : IN std_logic_vector(1 downto 0) := "00";
+			data_mux_en : IN std_logic;
+			addr_mux_sel : IN std_logic_vector(1 downto 0) := "00";
+			addr_mux_en : IN std_logic;
+		);
+	END COMPONENT;
 
 BEGIN
 	clk1 : clock port map (clk => clk);
 
-	register_a : cpu_register port map (
-			input => cpu_bus,
-			output => cpu_bus,
-			value => reg_a_value,
-			en => reg_a_en,
-			set => reg_a_set);
+	reg1 : reg port map(
+		clk => clk,
+		we => reg_a_we,
+		data => data_bus,
+		output => reg_a_out);
 
-	register_b : cpu_register port map (
-			input => cpu_bus,
-			output => cpu_bus,
-			value => reg_b_value,
-			en => reg_b_en,
-			set => reg_b_set);
+	reg2 : reg port map(
+		clk => clk,
+		we => reg_b_we,
+		data => data_bus,
+		output => reg_b_out);
 
 	alu1 : alu port map(
-		in1 => reg_a_value,
-		in2 => reg_b_value,
-		en => alu_en,
-		result => cpu_bus,
+		clk => clk,
+		in1 => reg_a_out,
+		in2 => reg_b_out,
+		sum => alu_out,
 		zero => alu_zero);
 
 	mem1 : memory port map(
-		data => cpu_bus,
-		addr =>  mem_addr,
-		en => mem_en,
-		rw => mem_rw);
+		data => data_bus,
+		addr => addr_bus,
+		ce => mem_ce,
+		oe => mem_oe,
+		we => mem_we);
 
-	test : PROCESS(clk)
-	VARIABLE current_counter : std_logic_vector(7 downto 0) := "00000000";
-	BEGIN
-		IF rising_edge(clk) THEN
-			current_counter := program_counter + 1;
-			program_counter <= current_counter;
-		END IF;
-		IF current_counter = 3 THEN
-			mem_rw <= '0';
-			mem_addr <= "0000";
-			cpu_bus <= x"AB";
-			mem_en <= '1';
-		END IF;
-		IF current_counter = 4 THEN
-			mem_rw <= '0';
-			mem_addr <= "0001";
-			cpu_bus <= x"BB";
-			mem_en <= '1';
-		END IF;
-		IF current_counter = 5 THEN
-			mem_rw <= '0';
-			mem_addr <= "0010";
-			cpu_bus <= x"BC";
-			mem_en <= '1';
-		END IF;
-		IF current_counter = 6 THEN
-			mem_rw <= '1';
-			mem_addr <= "0000";
-			cpu_bus <= "ZZZZZZZZ";
-			mem_en <= '1';
-		END IF;
-		IF current_counter = 7 THEN
-			mem_rw <= '1';
-			mem_addr <= "0001";
-			cpu_bus <= "ZZZZZZZZ";
-			mem_en <= '1';
-		END IF;
-		IF current_counter = 7 THEN
-			mem_en <= '0';
-		END IF;
-		IF current_counter = 8 THEN
-			mem_addr <= "0010";
-			mem_en <= '1';
-		END IF;
-	END PROCESS;
+	data_mux1 : mux port map(
+		in1 => reg_a_out,
+		in2 => reg_b_out,
+		in3 => alu_out,
+		en => data_mux_en,
+		sel => data_mux_sel,
+		output => data_bus);
 
+	addr_mux1 : mux port map(
+		in1 => reg_a_out,
+		in2 => reg_b_out,
+		in3 => alu_out,
+		en => addr_mux_en,
+		sel => addr_mux_sel,
+		output => addr_bus);
+
+	decoder1 : decoder port map(
+		clk => clk,
+		data_bus => data_bus,
+		addr_bus => addr_bus,
+		mem_ce => mem_ce,
+		mem_oe => mem_oe,
+		mem_we => mem_we,
+		reg_a_we => reg_a_we,
+		reg_b_we => reg_b_we,
+		alu_zero => alu_zero,
+		data_mux_sel => data_mux_sel,
+		data_mux_en => data_mux_en,
+		addr_mux_sel => addr_mux_sel,
+		addr_mux_en => addr_mux_en);
 END ARCHITECTURE;
 
 

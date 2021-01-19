@@ -4,30 +4,25 @@ use ieee.std_logic_unsigned.all;
 
 ENTITY alu IS
 	PORT(
+		clk    : IN std_logic;
 		in1    : IN std_logic_vector(7 downto 0);
 		in2    : IN std_logic_vector(7 downto 0);
-		en     : IN std_logic;
-		zero   : OUT std_logic;
-		result : OUT std_logic_vector(7 downto 0)
+		sum    : OUT std_logic_vector(7 downto 0);
+		zero   : OUT std_logic
 	);
 END ENTITY;
 
 ARCHITECTURE alu OF alu IS
 BEGIN
-	step : PROCESS(in1, in2, en)
-	VARIABLE sum : std_logic_vector(7 downto 0);
+	step : PROCESS(in1, in2)
 	BEGIN
-		IF en = '1' THEN
-			sum := in1 + in2;
-			IF sum = "00000000" THEN
+		IF rising_edge(clk) THEN
+			IF in1 + in2 = "00000000" THEN
 				zero <= '1';
 			ELSE
 				zero <= '0';
 			END IF;
-			result <= sum;
-		ELSE
-			zero <= 'Z';
-			result <= "ZZZZZZZZ";
+			sum <= in1 + in2;
 		END IF;
 	END PROCESS;
 END;
