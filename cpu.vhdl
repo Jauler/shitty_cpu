@@ -13,10 +13,10 @@ ARCHITECTURE cpu OF cpu IS
 	SIGNAL addr_bus : std_logic_vector(7 downto 0) := "ZZZZZZZZ";
 	SIGNAL data_bus : std_logic_vector(7 downto 0) := "ZZZZZZZZ";
 
-	SIGNAL clk: std_logic;
+	SIGNAL clk: std_logic := '0';
 	COMPONENT clock IS
 		port(
-			clk : OUT std_logic
+			clk : OUT std_logic := '0'
 		);
 	END COMPONENT;
 
@@ -36,7 +36,7 @@ ARCHITECTURE cpu OF cpu IS
 	SIGNAL reg_a_out: std_logic_vector(7 downto 0) := "00000000";
 	SIGNAL reg_b_we : std_logic := '0';
 	SIGNAL reg_b_out: std_logic_vector(7 downto 0) := "00000000";
-	COMPONENT reg IS
+	COMPONENT cpu_register IS
 		port(
 			clk    : IN std_logic;
 			we     : IN std_logic;
@@ -61,6 +61,7 @@ ARCHITECTURE cpu OF cpu IS
 	SIGNAL data_mux_en  : std_logic;
 	SIGNAL addr_mux_sel : std_logic_vector(1 downto 0) := "00";
 	SIGNAL addr_mux_en  : std_logic;
+
 	COMPONENT mux IS
 		port(
 			in1 : IN std_logic_vector(7 downto 0) := "00000000";
@@ -99,20 +100,21 @@ ARCHITECTURE cpu OF cpu IS
 			data_mux_sel : IN std_logic_vector(1 downto 0) := "00";
 			data_mux_en : IN std_logic;
 			addr_mux_sel : IN std_logic_vector(1 downto 0) := "00";
-			addr_mux_en : IN std_logic;
+			addr_mux_en : IN std_logic
 		);
 	END COMPONENT;
+
 
 BEGIN
 	clk1 : clock port map (clk => clk);
 
-	reg1 : reg port map(
+	reg1 : cpu_register port map(
 		clk => clk,
 		we => reg_a_we,
 		data => data_bus,
 		output => reg_a_out);
 
-	reg2 : reg port map(
+	reg2 : cpu_register port map(
 		clk => clk,
 		we => reg_b_we,
 		data => data_bus,
@@ -162,6 +164,7 @@ BEGIN
 		data_mux_en => data_mux_en,
 		addr_mux_sel => addr_mux_sel,
 		addr_mux_en => addr_mux_en);
+
 END ARCHITECTURE;
 
 
