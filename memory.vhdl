@@ -14,16 +14,23 @@ END ENTITY;
 
 ARCHITECTURE memory OF memory IS
 	TYPE mem_type is array (255 downto 0) of std_logic_vector(7 downto 0);
-	SIGNAL mem : mem_type;
+	SIGNAL mem : mem_type := (
+		0 => "00000001",
+		1 => "00001010",
+		2 => "00000010",
+		3 => "00000101",
+		4 => "00000011",
+		5 => "00000000",
+		others=>"00000000");
 BEGIN
-	storage : PROCESS(ce, we, oe)
+	storage : PROCESS(ce, we, oe, addr)
 	BEGIN
 		IF ce = '1' THEN
 			IF we = '0' AND oe = '0' THEN
 				data <= "ZZZZZZZZ";
-			ELSIF we = '0' AND oe = '1' THEN
-				mem(to_integer(unsigned(addr))) <= data;
 			ELSIF we = '1' AND oe = '0' THEN
+				mem(to_integer(unsigned(addr))) <= data;
+			ELSIF we = '0' AND oe = '1' THEN
 				data <= mem(to_integer(unsigned(addr)));
 			ELSIF we = '1' AND oe = '1' THEN
 				data <= "ZZZZZZZZ";
