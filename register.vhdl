@@ -13,17 +13,12 @@ END ENTITY;
 
 ARCHITECTURE cpu_register OF cpu_register IS
 BEGIN
-	reset_register : PROCESS (reset)
-	BEGIN
-		IF RESET = '1' THEN
-			output <= (others => '0');
-		END IF;
-	END PROCESS;
-
 	step : PROCESS (clk)
 	BEGIN
-		IF rising_edge(clk) AND we = '1' THEN
+		IF rising_edge(clk) AND we = '1' AND reset = '0' THEN
 			output <= data;
+		ELSIF reset = '1' THEN
+			output <= (others => '0');
 		END IF;
 	END PROCESS;
 END;
