@@ -8,7 +8,7 @@ SRC += decoder.vhdl
 SRC += mux.vhdl
 
 FLAGS  = --ieee=synopsys
-FLAGS += -fexplicit
+FLAGS += -fexplicit --std=02
 
 all: run
 
