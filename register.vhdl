@@ -13,7 +13,7 @@ END ENTITY;
 
 ARCHITECTURE cpu_register OF cpu_register IS
 BEGIN
-	step : PROCESS (clk)
+	step : PROCESS (reset, clk)
 	BEGIN
 		IF rising_edge(clk) AND we = '1' AND reset = '0' THEN
 			output <= data;
