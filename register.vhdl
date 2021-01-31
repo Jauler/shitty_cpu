@@ -11,7 +11,7 @@ ENTITY cpu_register IS
 	);
 END ENTITY;
 
-ARCHITECTURE cpu_register OF cpu_register IS
+ARCHITECTURE cpu_register_arch OF cpu_register IS
 BEGIN
 	step : PROCESS (reset, clk)
 	BEGIN

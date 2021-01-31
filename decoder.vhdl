@@ -34,7 +34,7 @@ ENTITY decoder IS
 	);
 END ENTITY;
 
-ARCHITECTURE decoder OF decoder IS
+ARCHITECTURE decoder_arch OF decoder IS
 	SIGNAL subinstr : std_logic_vector(4 downto 0);
 	SIGNAL program_counter : std_logic_vector(7 downto 0);
 	SIGNAL instruction_l : std_logic_vector(7 downto 0);

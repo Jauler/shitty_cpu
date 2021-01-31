@@ -21,7 +21,7 @@ ENTITY cpu IS
 	);
 END ENTITY;
 
-ARCHITECTURE cpu OF cpu IS
+ARCHITECTURE cpu_arch OF cpu IS
 	-- internal busses multiplexers control
 	SIGNAL data_mux_sel : std_logic_vector(1 downto 0);
 	SIGNAL data_mux_en  : std_logic;

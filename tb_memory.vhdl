@@ -12,7 +12,7 @@ ENTITY tb_memory IS
 	);
 END ENTITY;
 
-ARCHITECTURE tb_memory OF tb_memory IS
+ARCHITECTURE tb_memory_arch OF tb_memory IS
 	TYPE mem_type is array (255 downto 0) of std_logic_vector(7 downto 0);
 	SIGNAL mem : mem_type := (
 		0 => "00000001",

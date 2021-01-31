@@ -7,7 +7,7 @@ ENTITY tb_clock IS
 	);
 END ENTITY;
 
-ARCHITECTURE tb_clock OF tb_clock IS
+ARCHITECTURE tb_clock_arch OF tb_clock IS
 BEGIN
 	clk_generator : PROCESS
 	BEGIN

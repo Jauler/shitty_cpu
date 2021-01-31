@@ -12,7 +12,7 @@ ENTITY alu IS
 	);
 END ENTITY;
 
-ARCHITECTURE alu OF alu IS
+ARCHITECTURE alu_arch OF alu IS
 BEGIN
 	step : PROCESS(in1, in2)
 	BEGIN

@@ -14,7 +14,7 @@ ENTITY mux IS
 	);
 END ENTITY;
 
-ARCHITECTURE mux OF mux IS
+ARCHITECTURE mux_arch OF mux IS
 	SIGNAL intermediate : std_logic_vector(7 downto 0);
 BEGIN
 	PROCESS(en, sel, in1, in2, in3)
