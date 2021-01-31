@@ -16,13 +16,11 @@ ARCHITECTURE alu OF alu IS
 BEGIN
 	step : PROCESS(in1, in2)
 	BEGIN
-		IF rising_edge(clk) THEN
-			IF in1 + in2 = "00000000" THEN
-				zero <= '1';
-			ELSE
-				zero <= '0';
-			END IF;
-			sum <= in1 + in2;
+		IF in1 + in2 = "00000000" THEN
+			zero <= '1';
+		ELSE
+			zero <= '0';
 		END IF;
+		sum <= in1 + in2;
 	END PROCESS;
 END;
