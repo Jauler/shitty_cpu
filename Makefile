@@ -12,6 +12,8 @@ SRC += tb_movInstructionTest.vhdl
 FLAGS  = --ieee=synopsys
 FLAGS += -fexplicit --std=02
 
+ELABORATE = tb_movInstructionTest
+
 all: run
 
 analyze: $(SRC)
@@ -20,8 +22,8 @@ analyze: $(SRC)
 
 elaborate: analyze
 	@echo "Elaborating..."
-	ghdl -e $(FLAGS) cpu
+	ghdl -e $(FLAGS) $(ELABORATE)
 
 run: elaborate
 	@echo "Running... Press CTRL-C to stop"
-	ghdl -r $(FLAGS) cpu --wave=wave.ghw
+	ghdl -r $(FLAGS) $(ELABORATE) --wave=wave.ghw
