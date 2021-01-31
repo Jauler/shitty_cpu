@@ -42,6 +42,7 @@ ARCHITECTURE decoder OF decoder IS
 BEGIN
 	step : PROCESS (clk)
 	BEGIN
+		-- TODO: refactor into proper state machine
 		IF reset = '0' THEN
 			IF subinstr = 0 THEN
 				addr_bus <= program_counter;
