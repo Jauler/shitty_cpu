@@ -3,9 +3,9 @@ use ieee.std_logic_1164.all;
 
 ENTITY mux IS
 	port(
-		in1 : IN std_logic_vector(7 downto 0) := "00000000";
-		in2 : IN std_logic_vector(7 downto 0) := "00000000";
-		in3 : IN std_logic_vector(7 downto 0) := "00000000";
+		in1 : IN std_logic_vector(7 downto 0);
+		in2 : IN std_logic_vector(7 downto 0);
+		in3 : IN std_logic_vector(7 downto 0);
 
 		en   : IN std_logic;
 		sel  : IN std_logic_vector(1 downto 0);
@@ -15,21 +15,19 @@ ENTITY mux IS
 END ENTITY;
 
 ARCHITECTURE mux OF mux IS
+	SIGNAL intermediate : std_logic_vector(7 downto 0) := (others => '0');
 BEGIN
-	step : PROCESS(in1, in2, in3, en, sel)
+	PROCESS(en, sel, in1, in2, in3)
 	BEGIN
-		IF en = '1' THEN
-			IF sel = "00" THEN
-				output <= in1;
-			ELSIF sel = "01" THEN
-				output <= in2;
-			ELSIF sel = "10" THEN
-				output <= in3;
-			ELSE
-				output <= "00000000";
-			END IF;
-		ELSE
-			output <= "ZZZZZZZZ";
-		END IF;
+		CASE sel IS
+			WHEN "00" =>  intermediate <= in1;
+			WHEN "01" =>  intermediate <= in2;
+			WHEN "10" =>  intermediate <= in3;
+			WHEN others => intermediate <= (others =>'0');
+		END CASE;
+		CASE en IS
+			WHEN '1' => output <= intermediate;
+			WHEN others => output <= (others => '0');
+		END CASE;
 	END PROCESS;
 END ARCHITECTURE;
