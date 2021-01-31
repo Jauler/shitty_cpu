@@ -40,16 +40,6 @@ ARCHITECTURE decoder OF decoder IS
 	SIGNAL instruction_l : std_logic_vector(7 downto 0);
 	SIGNAL instruction_h : std_logic_vector(7 downto 0);
 BEGIN
-	reset_decoder : PROCESS(reset)
-	BEGIN
-		IF reset = '1' THEN
-			subinstr <= (others => '0');
-			program_counter <= (others => '0');
-			instruction_l <= (others => '0');
-			instruction_h <= (others => '0');
-		END IF;
-	END PROCESS;
-
 	step : PROCESS (clk)
 	BEGIN
 		IF reset = '0' THEN
@@ -116,6 +106,22 @@ BEGIN
 
 			-- Track subinstruction
 			subinstr <= subinstr + 1;
+		ELSE
+			-- reset logic
+			subinstr <= (others => '0');
+			program_counter <= (others => '0');
+			instruction_l <= (others => '0');
+			instruction_h <= (others => '0');
+
+			data_bus <= (others => 'Z');
+			addr_bus <= (others => 'Z');
+
+			mem_ce <= '0';
+			mem_oe <= '0';
+			mem_we <= '0';
+
+			reg_a_we <= '0';
+			reg_b_we <= '0';
 		END IF;
 	END PROCESS;
 END;
