@@ -2,7 +2,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-ENTITY memory IS
+ENTITY tb_memory IS
  	port(
 		ce : IN std_logic;
 		we : IN std_logic;
@@ -12,7 +12,7 @@ ENTITY memory IS
 	);
 END ENTITY;
 
-ARCHITECTURE memory OF memory IS
+ARCHITECTURE tb_memory OF tb_memory IS
 	TYPE mem_type is array (255 downto 0) of std_logic_vector(7 downto 0);
 	SIGNAL mem : mem_type := (
 		0 => "00000001",

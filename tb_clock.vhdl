@@ -1,13 +1,13 @@
 library ieee;
 use ieee.std_logic_1164.all;
 
-ENTITY clock IS
+ENTITY tb_clock IS
 	port(
 		clk : OUT std_logic := '0'
 	);
 END ENTITY;
 
-ARCHITECTURE clock OF clock IS
+ARCHITECTURE tb_clock OF tb_clock IS
 BEGIN
 	clk_generator : PROCESS
 	BEGIN
