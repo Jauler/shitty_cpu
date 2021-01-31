@@ -6,6 +6,7 @@ ENTITY mux IS
 		in1 : IN std_logic_vector(7 downto 0);
 		in2 : IN std_logic_vector(7 downto 0);
 		in3 : IN std_logic_vector(7 downto 0);
+		in4 : IN std_logic_vector(7 downto 0);
 
 		en   : IN std_logic;
 		sel  : IN std_logic_vector(1 downto 0);
@@ -15,19 +16,20 @@ ENTITY mux IS
 END ENTITY;
 
 ARCHITECTURE mux OF mux IS
-	SIGNAL intermediate : std_logic_vector(7 downto 0) := (others => '0');
+	SIGNAL intermediate : std_logic_vector(7 downto 0);
 BEGIN
-	PROCESS(en, sel, in1, in2, in3)
+	PROCESS(en, sel, in1, in2, in3, in4)
 	BEGIN
 		CASE sel IS
-			WHEN "00" =>  intermediate <= in1;
-			WHEN "01" =>  intermediate <= in2;
-			WHEN "10" =>  intermediate <= in3;
-			WHEN others => intermediate <= (others =>'0');
+			WHEN "00" => intermediate <= in1;
+			WHEN "01" => intermediate <= in2;
+			WHEN "10" => intermediate <= in3;
+			WHEN "11" => intermediate <= in4;
+			WHEN others => intermediate <= (others => '0');
 		END CASE;
 		CASE en IS
 			WHEN '1' => output <= intermediate;
-			WHEN others => output <= (others => '0');
+			WHEN others => output <= (others => 'Z');
 		END CASE;
 	END PROCESS;
 END ARCHITECTURE;
