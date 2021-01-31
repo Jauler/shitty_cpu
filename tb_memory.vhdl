@@ -25,18 +25,12 @@ ARCHITECTURE memory OF memory IS
 BEGIN
 	storage : PROCESS(ce, we, oe, addr)
 	BEGIN
-		IF ce = '1' THEN
-			IF we = '0' AND oe = '0' THEN
-				data <= "ZZZZZZZZ";
-			ELSIF we = '1' AND oe = '0' THEN
-				mem(to_integer(unsigned(addr))) <= data;
-			ELSIF we = '0' AND oe = '1' THEN
-				data <= mem(to_integer(unsigned(addr)));
-			ELSIF we = '1' AND oe = '1' THEN
-				data <= "ZZZZZZZZ";
-			END IF;
+		IF ce = '1' AND we = '1' AND oe = '0' THEN
+			mem(to_integer(unsigned(addr))) <= data;
+		ELSIF ce = '1' AND we = '0' AND oe = '1' THEN
+			data <= mem(to_integer(unsigned(addr)));
 		ELSE
-			data <= "ZZZZZZZZ";
+			data <= (others => 'Z');
 		END IF;
 	END PROCESS;
 END ARCHITECTURE;
