@@ -1,11 +1,12 @@
 
-SRC  = cpu.vhdl
-SRC += clock.vhdl
+SRC  = mux.vhdl
 SRC += register.vhdl
 SRC += alu.vhdl
-SRC += memory.vhdl
 SRC += decoder.vhdl
-SRC += mux.vhdl
+SRC += cpu.vhdl
+
+SRC += tb_memory.vhdl
+SRC += tb_clock.vhdl
 
 FLAGS  = --ieee=synopsys
 FLAGS += -fexplicit --std=02
