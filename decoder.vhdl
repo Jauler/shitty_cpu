@@ -125,8 +125,14 @@ BEGIN
 				WHEN "10" =>
 					data_mux_sel <= instruction (2 downto 0);
 					data_mux_en <= '1';
+
 					addr_mux_sel <= instruction (5 downto 3);
 					addr_mux_en <= '1';
+
+					mem_ce <= '1';
+					mem_oe <= '0';
+					mem_we <= '1';
+
 
 				-- conditional jump instruction
 				WHEN "11" =>
@@ -158,9 +164,9 @@ BEGIN
 					reg_a_we <= instruction(3);
 
 				WHEN "10" =>
-					mem_ce <= '1';
+					mem_ce <= '0';
 					mem_oe <= '0';
-					mem_we <= '1';
+					mem_we <= '0';
 
 				WHEN "11" =>
 					IF alu_zero = '1' THEN
