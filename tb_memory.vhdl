@@ -15,12 +15,24 @@ END ENTITY;
 ARCHITECTURE tb_memory_arch OF tb_memory IS
 	TYPE mem_type is array (255 downto 0) of std_logic_vector(7 downto 0);
 	SIGNAL mem : mem_type := (
-		0 => "00000001",
-		1 => "00001010",
-		2 => "00000010",
-		3 => "00000101",
-		4 => "00000011",
+		0 => "01001011", -- LOAD A, 0x80
+		1 => "10000000",
+
+		2 => "00010011", -- MOVE B, 0x00
+		3 => "11111111",
+
+		4 => "00001010", -- ADD A
 		5 => "00000000",
+
+		6 => "11000000", -- JZ 0x00 (0xFE + 2 == 0x00)
+		7 => "11111110",
+
+		8 => "00100011", -- J 0x04
+		9 => "00000010",
+
+		-- data
+		128 => "00001011",
+
 		others=>"00000000");
 BEGIN
 	storage : PROCESS(ce, we, oe, addr)
