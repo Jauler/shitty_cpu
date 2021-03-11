@@ -15,23 +15,36 @@ END ENTITY;
 ARCHITECTURE tb_memory_arch OF tb_memory IS
 	TYPE mem_type is array (255 downto 0) of std_logic_vector(7 downto 0);
 	SIGNAL mem : mem_type := (
-		0 => "01001011", -- LOAD A, 0x80
-		1 => "10000000",
+		0 => "01001011", -- MOVE A, [0x81]
+		1 => "10000001",
 
-		2 => "00010011", -- MOVE B, 0x00
-		3 => "11111111",
+		2 => "00010011", -- MOVE B, 0x01
+		3 => "00000001",
 
 		4 => "00001010", -- ADD A
 		5 => "00000000",
 
-		6 => "11000000", -- JZ 0x00 (0xFE + 2 == 0x00)
-		7 => "11111110",
+		6 => "10011000", -- MOVE [0x81], B
+		7 => "10000001",
 
-		8 => "00100011", -- J 0x04
-		9 => "00000010",
+		8 => "01001011", -- MOVE A, [0x80]
+		9 => "10000000",
+
+		10 => "00010011", -- MOVE B, 0xFF
+		11 => "11111111",
+
+		12 => "00001010", -- ADD A
+		13 => "00000000",
+
+		14 => "11000000", -- JZ 0x00 (0xFE + 2 == 0x00)
+		15 => "11111110",
+
+		16 => "00100011", -- J 0x0C (0x0A + 2 == 0x0C)
+		17 => "00001010",
 
 		-- data
 		128 => "00001011",
+		129 => "00000010",
 
 		others=>"00000000");
 BEGIN
@@ -41,7 +54,9 @@ BEGIN
 			mem(to_integer(unsigned(addr))) <= data;
 		ELSIF ce = '1' AND we = '0' AND oe = '1' THEN
 			data <= mem(to_integer(unsigned(addr)));
-		ELSE
+		END IF;
+
+		IF ce = '0' OR oe = '0' THEN
 			data <= (others => 'Z');
 		END IF;
 	END PROCESS;
