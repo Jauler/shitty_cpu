@@ -7,7 +7,7 @@ SRC += cpu.vhdl
 
 SRC += tb_memory.vhdl
 SRC += tb_clock.vhdl
-SRC += tb_movInstructionTest.vhdl
+SRC += tb_loopTest.vhdl
 
 FLAGS  = --ieee=synopsys
 FLAGS += -fexplicit --std=02
