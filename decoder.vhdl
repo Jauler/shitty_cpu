@@ -22,17 +22,23 @@ ENTITY decoder IS
 		reg_a_we : OUT std_logic;
 		reg_b_we : OUT std_logic;
 
-		-- instruction register value
-		instruction : IN std_logic_vector(7 downto 0);
+		-- some register's value
+		instruction     : IN std_logic_vector(7 downto 0);
+		program_counter : IN std_logic_vector(7 downto 0);
 
 		-- ALU
 		alu_zero : IN std_logic;
+		alu_we   : OUT std_logic;
 
 		-- muxes control
 		data_mux_sel : OUT std_logic_vector(2 downto 0);
 		data_mux_en : OUT std_logic;
 		addr_mux_sel : OUT std_logic_vector(2 downto 0);
-		addr_mux_en : OUT std_logic
+		addr_mux_en : OUT std_logic;
+
+		-- Input into muxes from decoder
+		data_bus_out : OUT std_logic_vector(7 downto 0);
+		addr_bus_out : OUT std_logic_vector(7 downto 0)
 	);
 END ENTITY;
 
@@ -81,7 +87,8 @@ BEGIN
 				mem_ce <= '1';
 				mem_oe <= '1';
 				mem_we <= '0';
-				addr_mux_sel <= "100"; -- PC into addr bus
+				addr_bus_out <= program_counter;
+				addr_mux_sel <= "110"; -- decoder addr out into addr bus
 				addr_mux_en <= '1';
 				state <= FETCH_I_START_WRITE;
 			WHEN FETCH_I_START_WRITE =>
@@ -107,7 +114,8 @@ BEGIN
 				mem_ce <= '1';
 				mem_oe <= '1';
 				mem_we <= '0';
-				addr_mux_sel <= "101"; -- PC+1 into addr bus
+				addr_bus_out <= std_logic_vector(unsigned(program_counter) + 1);
+				addr_mux_sel <= "110"; -- decoder addr out into addr bus
 				addr_mux_en <= '1';
 				state <= FETCH_O_START_WRITE;
 			WHEN FETCH_O_START_WRITE =>
@@ -158,14 +166,24 @@ BEGIN
 			WHEN EXECUTE_START_WRITE =>
 				CASE instruction (7 downto 6) IS
 				WHEN INSTR_REG_TO_REG =>
-					reg_pc_we <= instruction(5);
-					reg_b_we <= instruction(4);
-					reg_a_we <= instruction(3);
+					CASE instruction (4 downto 3) IS
+					WHEN "00" => reg_a_we <= '1';
+					WHEN "01" => reg_b_we <= '1';
+					WHEN "10" => alu_we <= '1';
+					WHEN "11" => reg_pc_we <= '1';
+					WHEN others =>
+					END CASE;
 				WHEN INSTR_MEM_TO_REG =>
-					reg_pc_we <= instruction(5);
-					reg_b_we <= instruction(4);
-					reg_a_we <= instruction(3);
+					CASE instruction (4 downto 3) IS
+					WHEN "00" => reg_a_we <= '1';
+					WHEN "01" => reg_b_we <= '1';
+					WHEN "10" => alu_we <= '1';
+					WHEN "11" => reg_pc_we <= '1';
+					WHEN others =>
+					END CASE;
 				WHEN INSTR_REG_TO_MEM =>
+					mem_ce <= '1';
+					mem_oe <= '0';
 					mem_we <= '1';
 				WHEN INSTR_CONDITIONAL =>
 					IF alu_zero = '1' THEN
@@ -193,7 +211,8 @@ BEGIN
 			-- Increment program counter by 2
 			WHEN INCREMENT_SETUP =>
 				-- Increment PC by 2
-				data_mux_sel <= "110"; -- PC + 2 into data bus
+				data_bus_out <= std_logic_vector(unsigned(program_counter) + 2);
+				data_mux_sel <= "101"; -- decoder data into data bus
 				data_mux_en <= '1';
 				state <= INCREMENT_START_WRITE;
 			WHEN INCREMENT_START_WRITE =>

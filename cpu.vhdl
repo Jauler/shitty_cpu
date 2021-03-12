@@ -31,8 +31,6 @@ ARCHITECTURE cpu_arch OF cpu IS
 	-- register signals
 	SIGNAL reg_pc_we : std_logic;
 	SIGNAL reg_pc_out: std_logic_vector(7 downto 0);
-	SIGNAL reg_pcinc1_out : std_logic_vector(7 downto 0); -- PC value incremented by 1
-	SIGNAL reg_pcinc2_out : std_logic_vector(7 downto 0); -- PC value incremented by 2
 	SIGNAL reg_operand_we : std_logic;
 	SIGNAL reg_operand_out: std_logic_vector(7 downto 0);
 	SIGNAL reg_instruction_we : std_logic;
@@ -45,6 +43,11 @@ ARCHITECTURE cpu_arch OF cpu IS
 	-- ALU outputs
 	SIGNAL alu_out    : std_logic_vector(7 downto 0);
 	SIGNAL alu_zero   : std_logic;
+	SIGNAL alu_we     : std_logic;
+
+	-- decoder outputs
+	SIGNAL decoder_data_out : std_logic_vector(7 downto 0);
+	SIGNAL decoder_addr_out : std_logic_vector(7 downto 0);
 
 BEGIN
 	pc_reg1 : ENTITY work.cpu_register port map(
@@ -83,7 +86,9 @@ BEGIN
 		output => reg_b_out);
 
 	alu1 : ENTITY work.alu port map(
+		reset => reset,
 		clk => clk,
+		we => alu_we,
 		in1 => reg_a_out,
 		in2 => reg_b_out,
 		sum => alu_out,
@@ -95,9 +100,9 @@ BEGIN
 		in3 => alu_out,
 		in4 => reg_operand_out,
 		in5 => reg_pc_out,
-		in6 => reg_pcinc1_out,
-		in7 => reg_pcinc2_out,
-		in8 => (others => '0'), -- unused
+		in6 => decoder_data_out,
+		in7 => decoder_addr_out,
+		in8 => alu_out,
 		en => data_mux_en,
 		sel => data_mux_sel,
 		output => data_bus);
@@ -108,9 +113,9 @@ BEGIN
 		in3 => alu_out,
 		in4 => reg_operand_out,
 		in5 => reg_pc_out,
-		in6 => reg_pcinc1_out,
-		in7 => reg_pcinc2_out,
-		in8 => (others => '0'), -- unused
+		in6 => decoder_data_out,
+		in7 => decoder_addr_out,
+		in8 => alu_out,
 		en => addr_mux_en,
 		sel => addr_mux_sel,
 		output => addr_bus);
@@ -133,17 +138,20 @@ BEGIN
 
 		-- instruction register
 		instruction => reg_instruction_out,
+		program_counter => reg_pc_out,
 
 		-- alu
 		alu_zero => alu_zero,
+		alu_we => alu_we,
 
 		-- muxes
 		data_mux_sel => data_mux_sel,
 		data_mux_en => data_mux_en,
 		addr_mux_sel => addr_mux_sel,
-		addr_mux_en => addr_mux_en);
+		addr_mux_en => addr_mux_en,
 
-	reg_pcinc1_out <= std_logic_vector(unsigned(reg_pc_out) + 1);
-	reg_pcinc2_out <= std_logic_vector(unsigned(reg_pc_out) + 2);
+		-- decoder bus output
+		data_bus_out => decoder_data_out,
+		addr_bus_out => decoder_addr_out);
 END ARCHITECTURE;
 
