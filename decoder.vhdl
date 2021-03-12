@@ -58,7 +58,7 @@ ARCHITECTURE decoder_arch OF decoder IS
 BEGIN
 	PROCESS (clk, reset)
 	BEGIN
-		IF (reset = '1') THEN
+		IF (reset = '0') THEN
 			state <= FETCH_I_SETUP;
 			mem_ce <= '0';
 			mem_oe <= '0';

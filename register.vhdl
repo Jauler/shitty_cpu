@@ -16,10 +16,10 @@ ARCHITECTURE cpu_register_arch OF cpu_register IS
 BEGIN
 	step : PROCESS (reset, clk)
 	BEGIN
-		IF rising_edge(clk) AND we = '1' AND reset = '0' THEN
-			output <= data;
-		ELSIF reset = '1' THEN
+		IF reset = '0' THEN
 			output <= (others => '0');
+		ELSIF rising_edge(clk) AND we = '1' THEN
+			output <= data;
 		END IF;
 	END PROCESS;
 END;

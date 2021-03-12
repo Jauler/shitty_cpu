@@ -6,7 +6,7 @@ ENTITY tb_loopTest IS
 END ENTITY;
 
 ARCHITECTURE tb_loopTest_arch OF tb_loopTest IS
-	SIGNAL reset : std_logic := '1';
+	SIGNAL reset : std_logic := '0';
 
 	SIGNAL clk : std_logic := '0';
 
@@ -42,7 +42,7 @@ BEGIN
 
 	test : PROCESS(clk)
 	BEGIN
-		reset <= '0' after 20 ns;
+		reset <= '1' after 20 ns;
 	END PROCESS;
 END ARCHITECTURE;
 

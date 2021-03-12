@@ -18,7 +18,7 @@ ARCHITECTURE alu_arch OF alu IS
 BEGIN
 	step : PROCESS(clk, reset)
 	BEGIN
-		IF reset = '1' THEN
+		IF reset = '0' THEN
 			sum <= (others => '0');
 			zero <= '0';
 		ELSIF rising_edge(clk) AND we = '1' THEN
