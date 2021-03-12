@@ -1,6 +1,6 @@
 library ieee;
 use ieee.std_logic_1164.all;
-use ieee.std_logic_unsigned.all;
+use ieee.numeric_std.all;
 
 ENTITY cpu IS
 	port(
@@ -143,7 +143,7 @@ BEGIN
 		addr_mux_sel => addr_mux_sel,
 		addr_mux_en => addr_mux_en);
 
-	reg_pcinc1_out <= reg_pc_out + 1;
-	reg_pcinc2_out <= reg_pc_out + 2;
+	reg_pcinc1_out <= std_logic_vector(unsigned(reg_pc_out) + 1);
+	reg_pcinc2_out <= std_logic_vector(unsigned(reg_pc_out) + 2);
 END ARCHITECTURE;
 

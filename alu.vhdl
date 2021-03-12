@@ -1,6 +1,6 @@
 library ieee;
 use ieee.std_logic_1164.all;
-use ieee.std_logic_unsigned.all;
+use ieee.numeric_std.all;
 
 ENTITY alu IS
 	PORT(
@@ -16,11 +16,11 @@ ARCHITECTURE alu_arch OF alu IS
 BEGIN
 	step : PROCESS(in1, in2)
 	BEGIN
-		IF in1 + in2 = "00000000" THEN
+		IF unsigned(in1) + unsigned(in2) = "00000000" THEN
 			zero <= '1';
 		ELSE
 			zero <= '0';
 		END IF;
-		sum <= in1 + in2;
+		sum <= std_logic_vector(unsigned(in1) + unsigned(in2));
 	END PROCESS;
 END;
