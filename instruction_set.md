@@ -11,14 +11,16 @@ This `shitty_cpu` supports four types of instructions:
 The instruction byte is of the format:
 
 ```
-TT DDD SSS
+TT XDD SSS
 ```
 here:
 * T - type bits, always "00"
+* X - Don't care
 * D - destination bits
-    * "001" - register a
-    * "010" - register b
-    * "100" - program counter
+    * "00" - register a
+    * "01" - register b
+    * "10" - perform ALU operation
+    * "11" - program counter
 
 * S - source bits
     * "000" - register a
@@ -26,32 +28,37 @@ here:
     * "010" - alu out
     * "011" - operand byte
     * "100" - program counter
-    * "101" - program counter + 1
-    * "110" - program counter + 2
-    * "111" - const zero
+    * "101" - reserved
+    * "110" - reserved
+    * "111" - alu output
+
+### Examples
+* MOV A, B: `00000001`
+* MOV B, A: `00001000`
+* JMP <op>: `00011011`
+* JMP A: `000011000`
 
 
-* `LOAD_A` Immediate8
-* `LOAD_B` Immediate8
-* `ADD_TO_A`
-* `ADD_TO_B`
-* `JUMP` <Addr8>
 
 ## memory to register
 
 The instruction byte is of the format:
 
 ```
-TT DDD SSS
+TT XDD SSS
 ```
 
 Here:
 * T - type bits, always "01"
+* X - Don't care
 * D - destination bits, same as register to register
-* S - source of the address, meaning is the same as register to register instructions
+* S - source of the address. These bits values has the same meaning as register to register
 
-* `LOAD_A` Addr8
-* `LOAD_B` Addr8
+### Examples
+* MOV A, [<op>]: `01000011`
+* MOV B, [A]: `01001000`
+* JMP [<op>]: `01011011`
+* JMP [A]: `01011000`
 
 ## register to memory
 
@@ -63,11 +70,13 @@ TT AAA SSS
 
 Here:
 * T - type bits, always "10"
-* A - source of the address value, meaning is the same as register to register source value
-* S - source of the data value, meaning is the same as register to register source value
+* A - source of the address value. These bits values has the same meaning as register to register S bits values
+* S - source of the data value. These bits values has the same meaning as register to register S bits values
 
-* `STORE_A` Addr8
-* `STORE_B` Addr8
+### Examples
+* MOV [<op>], A: `10011000`
+* MOV [A], B: `10000001`
+* MOV [ACC], B: `10010001`
 
 ## Conditional type:
 
@@ -77,7 +86,8 @@ The instruction byte is of the format:
 TT XXXXXX
 ```
 Here:
-* T - type bits, always "10"
+* T - type bits, always "11"
 * X - Dont care
 
-* `JUMP` IF ZERO <Addr8>
+### Examples
+JZ <op>: `11000000`
