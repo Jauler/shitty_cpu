@@ -2,10 +2,10 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.std_logic_unsigned.all;
 
-ENTITY tb_movInstructionTest IS
+ENTITY tb_loopTest IS
 END ENTITY;
 
-ARCHITECTURE tb_movInstructionTest_arch OF tb_movInstructionTest IS
+ARCHITECTURE tb_loopTest_arch OF tb_loopTest IS
 	SIGNAL reset : std_logic := '1';
 
 	SIGNAL clk : std_logic := '0';

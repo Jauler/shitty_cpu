@@ -12,7 +12,7 @@ SRC += tb_loopTest.vhdl
 FLAGS  = --ieee=synopsys
 FLAGS += -fexplicit --std=08
 
-ELABORATE = tb_movInstructionTest
+ELABORATE = tb_loopTest
 
 all: run
 
