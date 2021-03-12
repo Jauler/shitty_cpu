@@ -38,7 +38,7 @@ BEGIN
 		END CASE;
 		CASE en IS
 			WHEN '1' => output <= intermediate;
-			WHEN others => output <= (others => 'Z');
+			WHEN others => output <= (others => 'L');
 		END CASE;
 	END PROCESS;
 END ARCHITECTURE;

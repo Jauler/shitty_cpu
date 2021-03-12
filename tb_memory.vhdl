@@ -57,7 +57,7 @@ BEGIN
 		END IF;
 
 		IF ce = '0' OR oe = '0' THEN
-			data <= (others => 'Z');
+			data <= (others => 'L');
 		END IF;
 	END PROCESS;
 END ARCHITECTURE;
