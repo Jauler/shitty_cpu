@@ -37,14 +37,23 @@ ENTITY decoder IS
 END ENTITY;
 
 ARCHITECTURE decoder_arch OF decoder IS
-	TYPE states IS (FETCH_I, FETCH_O, DECODE, EXECUTE, INCREMENT);
+	CONSTANT INSTR_REG_TO_REG  : std_logic_vector(1 downto 0) := "00";
+	CONSTANT INSTR_MEM_TO_REG  : std_logic_vector(1 downto 0) := "01";
+	CONSTANT INSTR_REG_TO_MEM  : std_logic_vector(1 downto 0) := "10";
+	CONSTANT INSTR_CONDITIONAL : std_logic_vector(1 downto 0) := "11";
+
+	TYPE states IS (FETCH_I_SETUP, FETCH_I_START_WRITE, FETCH_I_WRITE, FETCH_I_END_WRITE, FETCH_I_CLEANUP,
+			FETCH_O_SETUP, FETCH_O_START_WRITE, FETCH_O_WRITE, FETCH_O_END_WRITE, FETCH_O_CLEANUP,
+			EXECUTE_SETUP, EXECUTE_START_WRITE, EXECUTE_WRITE, EXECUTE_END_WRITE, EXECUTE_CLEANUP,
+			INCREMENT_SETUP, INCREMENT_START_WRITE, INCREMENT_WRITE, INCREMENT_END_WRITE, INCREMENT_CLEANUP
+			);
 
 	SIGNAL state : States;
 BEGIN
 	PROCESS (clk, reset)
 	BEGIN
 		IF (reset = '1') THEN
-			state <= FETCH_I;
+			state <= FETCH_I_SETUP;
 			mem_ce <= '0';
 			mem_oe <= '0';
 			mem_we <= '0';
@@ -68,133 +77,137 @@ BEGIN
 			CASE state IS
 
 			-- read instruction byte into register
-			WHEN FETCH_I =>
-				-- clear signals from increment stage
-				data_mux_en <= '0';
-				reg_pc_we <= '0';
-
-				-- configure memory to read instruction byte
+			WHEN FETCH_I_SETUP =>
 				mem_ce <= '1';
 				mem_oe <= '1';
 				mem_we <= '0';
 				addr_mux_sel <= "100"; -- PC into addr bus
 				addr_mux_en <= '1';
+				state <= FETCH_I_START_WRITE;
+			WHEN FETCH_I_START_WRITE =>
 				reg_instruction_we <= '1';
-				state <= FETCH_O;
+				state <= FETCH_I_WRITE;
+			WHEN FETCH_I_WRITE =>
+				state <= FETCH_I_END_WRITE;
+			WHEN FETCH_I_END_WRITE =>
+				reg_instruction_we <= '0';
+				state <= FETCH_I_CLEANUP;
+			WHEN FETCH_I_CLEANUP =>
+				mem_ce <= '0';
+				mem_oe <= '0';
+				mem_we <= '0';
+				addr_mux_en <= '0';
+				state <= FETCH_O_SETUP;
 
 			-- All instructions contains operand
 			-- byte... Even if it is not used :D
-			-- Lets setup memory, to read that
-			-- byte
-			WHEN FETCH_O =>
-				reg_instruction_we <= '0';
-
+			-- Lets read that byte into operand
+			-- register
+			WHEN FETCH_O_SETUP =>
 				mem_ce <= '1';
 				mem_oe <= '1';
 				mem_we <= '0';
 				addr_mux_sel <= "101"; -- PC+1 into addr bus
 				addr_mux_en <= '1';
+				state <= FETCH_O_START_WRITE;
+			WHEN FETCH_O_START_WRITE =>
 				reg_operand_we <= '1';
-				state <= DECODE;
-
-			WHEN DECODE =>
+				state <= FETCH_O_WRITE;
+			WHEN FETCH_O_WRITE =>
+				state <= FETCH_O_END_WRITE;
+			WHEN FETCH_O_END_WRITE =>
 				reg_operand_we <= '0';
+				state <= FETCH_O_CLEANUP;
+			WHEN FETCH_O_CLEANUP =>
 				mem_ce <= '0';
 				mem_oe <= '0';
 				mem_we <= '0';
 				addr_mux_en <= '0';
-				reg_operand_we <= '0';
+				state <= EXECUTE_SETUP;
 
-				-- setup data according to instruction type
+
+			-- Execute instruction
+			WHEN EXECUTE_SETUP =>
+				-- setup control signals to output
+				-- required data onto data and/or
+				-- address bus according to instruction
+				-- type
 				CASE instruction (7 downto 6) IS
-
-				-- direct (aka register to register) instruction
-				WHEN "00" =>
+				WHEN INSTR_REG_TO_REG =>
 					data_mux_en <= '1';
 					data_mux_sel <= instruction (2 downto 0);
-
-				-- memory to register instruction
-				WHEN "01" =>
+				WHEN INSTR_MEM_TO_REG =>
+					addr_mux_sel <= instruction (2 downto 0);
+					addr_mux_en <= '1';
 					mem_ce <= '1';
 					mem_oe <= '1';
 					mem_we <= '0';
-					addr_mux_sel <= instruction (2 downto 0);
-					addr_mux_en <= '1';
-
-				-- register to memory instruction
-				WHEN "10" =>
+				WHEN INSTR_REG_TO_MEM =>
 					data_mux_sel <= instruction (2 downto 0);
 					data_mux_en <= '1';
-
 					addr_mux_sel <= instruction (5 downto 3);
 					addr_mux_en <= '1';
-
-					mem_ce <= '1';
-					mem_oe <= '0';
-					mem_we <= '1';
-
-
-				-- conditional jump instruction
-				WHEN "11" =>
+				WHEN INSTR_CONDITIONAL =>
 					IF alu_zero = '1' THEN
-						data_mux_sel <= "011";
+						data_mux_sel <= "011"; -- operand value into data bus
 						data_mux_en <= '1';
 					END IF;
-
 				WHEN others =>
 				END CASE;
-
-				state <= EXECUTE;
-
-			WHEN EXECUTE =>
-				-- Data bus value has been configured in decode
-				-- stage. Now we need to configure write of this
-				-- data.
-
-				-- setup data according to instruction type
+				state <= EXECUTE_START_WRITE;
+			WHEN EXECUTE_START_WRITE =>
 				CASE instruction (7 downto 6) IS
-				WHEN "00" =>
+				WHEN INSTR_REG_TO_REG =>
 					reg_pc_we <= instruction(5);
 					reg_b_we <= instruction(4);
 					reg_a_we <= instruction(3);
-
-				WHEN "01" =>
+				WHEN INSTR_MEM_TO_REG =>
 					reg_pc_we <= instruction(5);
 					reg_b_we <= instruction(4);
 					reg_a_we <= instruction(3);
-
-				WHEN "10" =>
-					mem_ce <= '0';
-					mem_oe <= '0';
-					mem_we <= '0';
-
-				WHEN "11" =>
+				WHEN INSTR_REG_TO_MEM =>
+					mem_we <= '1';
+				WHEN INSTR_CONDITIONAL =>
 					IF alu_zero = '1' THEN
 						reg_pc_we <= '1';
 					END IF;
-
 				WHEN others =>
 				END CASE;
-
-				state <= INCREMENT;
-
-			WHEN INCREMENT =>
-				-- Clear all control signals
+				state <= EXECUTE_WRITE;
+			WHEN EXECUTE_WRITE =>
+				state <= EXECUTE_END_WRITE;
+			WHEN EXECUTE_END_WRITE =>
+				reg_pc_we <= '0';
+				reg_b_we <= '0';
+				reg_a_we <= '0';
+				mem_we <= '0';
+				reg_pc_we <= '0';
+				state <= EXECUTE_CLEANUP;
+			WHEN EXECUTE_CLEANUP =>
 				mem_ce <= '0';
 				mem_oe <= '0';
-				mem_we <= '0';
-				reg_operand_we <= '0';
-				reg_instruction_we <= '0';
-				reg_a_we <= '0';
-				reg_b_we <= '0';
+				data_mux_en <= '0';
 				addr_mux_en <= '0';
-				addr_mux_sel <= "000";
+				state <= INCREMENT_SETUP;
 
+			-- Increment program counter by 2
+			WHEN INCREMENT_SETUP =>
 				-- Increment PC by 2
-				data_mux_sel <= "110";
+				data_mux_sel <= "110"; -- PC + 2 into data bus
 				data_mux_en <= '1';
+				state <= INCREMENT_START_WRITE;
+			WHEN INCREMENT_START_WRITE =>
 				reg_pc_we <= '1';
-				state <= FETCH_I;
+				state <= INCREMENT_WRITE;
+			WHEN INCREMENT_WRITE =>
+				state <= INCREMENT_END_WRITE;
+			WHEN INCREMENT_END_WRITE =>
+				reg_pc_we <= '0';
+				state <= INCREMENT_CLEANUP;
+			WHEN INCREMENT_CLEANUP =>
+				data_mux_en <= '0';
+				state <= FETCH_I_SETUP;
+
 			END CASE;
 		END IF;
 	END PROCESS;

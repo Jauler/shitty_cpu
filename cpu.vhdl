@@ -22,9 +22,6 @@ ENTITY cpu IS
 END ENTITY;
 
 ARCHITECTURE cpu_arch OF cpu IS
-	-- inverted clock
-	SIGNAL inv_clock : std_logic;
-
 	-- internal busses multiplexers control
 	SIGNAL data_mux_sel : std_logic_vector(2 downto 0);
 	SIGNAL data_mux_en  : std_logic;
@@ -120,7 +117,7 @@ BEGIN
 
 	decoder1 : ENTITY work.decoder port map(
 		reset => reset,
-		clk => inv_clock,
+		clk => clk,
 
 		-- memory and busses
 		mem_ce => mem_ce,
@@ -148,6 +145,5 @@ BEGIN
 
 	reg_pcinc1_out <= reg_pc_out + 1;
 	reg_pcinc2_out <= reg_pc_out + 2;
-	inv_clock <= not clk;
 END ARCHITECTURE;
 
