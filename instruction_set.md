@@ -33,10 +33,12 @@ here:
     * "111" - alu output
 
 ### Examples
-* MOV A, B: `00000001`
-* MOV B, A: `00001000`
-* JMP <op>: `00011011`
-* JMP A: `000011000`
+```
+MOV A, B         00000001
+MOV B, A         00001000
+JMP <op>         00011011
+JMP A            00011000
+```
 
 
 
@@ -55,10 +57,12 @@ Here:
 * S - source of the address. These bits values has the same meaning as register to register
 
 ### Examples
-* MOV A, [<op>]: `01000011`
-* MOV B, [A]: `01001000`
-* JMP [<op>]: `01011011`
-* JMP [A]: `01011000`
+```
+MOV A, [<op>]    01000011
+MOV B, [A]       01001000
+JMP [<op>]       01011011
+JMP [A]          01011000
+```
 
 ## register to memory
 
@@ -74,9 +78,11 @@ Here:
 * S - source of the data value. These bits values has the same meaning as register to register S bits values
 
 ### Examples
-* MOV [<op>], A: `10011000`
-* MOV [A], B: `10000001`
-* MOV [ACC], B: `10010001`
+```
+MOV [<op>], A  10011000
+MOV [A], B     10000001
+MOV [ACC], B   10010001
+```
 
 ## Conditional type:
 
@@ -90,4 +96,6 @@ Here:
 * X - Dont care
 
 ### Examples
-JZ <op>: `11000000`
+```
+JZ <op>          11000000
+```
