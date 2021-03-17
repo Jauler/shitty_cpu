@@ -75,10 +75,6 @@ BEGIN
 			addr_mux_en <= '0';
 			addr_mux_sel <= "000";
 
-		-- Now we set all signals on falling edge
-		-- Therefore the signals will be stable on
-		-- rising edge. Where most of the components
-		-- make their actions.
 		ELSIF (rising_edge(clk)) THEN
 			CASE state IS
 
