@@ -5,13 +5,13 @@ SRC += alu.vhdl
 SRC += decoder.vhdl
 SRC += cpu.vhdl
 
-SRC += tb_memory.vhdl
-SRC += tb_clock.vhdl
-SRC += tb_mux.vhdl
-SRC += tb_alu.vhdl
-SRC += tb_register.vhdl
-SRC += tb_cpu_increment.vhdl
-SRC += tb_cpu_conditional.vhdl
+SRC += tests/tb_memory.vhdl
+SRC += tests/tb_clock.vhdl
+SRC += tests/tb_mux.vhdl
+SRC += tests/tb_alu.vhdl
+SRC += tests/tb_register.vhdl
+SRC += tests/tb_cpu_increment.vhdl
+SRC += tests/tb_cpu_conditional.vhdl
 
 FLAGS  = --ieee=synopsys
 FLAGS += -fexplicit --std=08
