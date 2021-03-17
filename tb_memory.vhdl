@@ -2,57 +2,31 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
+PACKAGE tb_memory_type_pkg IS
+	TYPE mem_type IS array (255 downto 0) of std_logic_vector(7 downto 0);
+END PACKAGE;
+
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
+use work.tb_memory_type_pkg.mem_type;
+
 ENTITY tb_memory IS
- 	port(
+	generic (
+		initial_contents : mem_type
+	);
+	port(
 		ce : IN std_logic;
 		we : IN std_logic;
 		oe : IN std_logic;
 		data : INOUT std_logic_vector(7 downto 0);
-		addr : IN std_logic_vector(7 downto 0)
+		addr : IN std_logic_vector(7 downto 0);
+		contents : OUT mem_type := initial_contents
 	);
 END ENTITY;
 
 ARCHITECTURE tb_memory_arch OF tb_memory IS
-	TYPE mem_type is array (255 downto 0) of std_logic_vector(7 downto 0);
-	SIGNAL mem : mem_type := (
-		0 => "01000011", -- MOVE A, [0x81]
-		1 => x"81",
-
-		2 => "00001011", -- MOVE B, 0x01
-		3 => x"01",
-
-		4 => "00010000", -- ADD
-		5 => x"00",
-
-		6 => "00001111", -- MOV B, ACC
-		7 => x"00",
-
-		8 => "10011001", -- MOVE [0x81], B
-		9 => x"81",
-
-		10 => "01000011", -- MOVE A, [0x80]
-		11 => x"80",
-
-		12 => "00001011", -- MOVE B, 0xFF
-		13 => x"FF",
-
-		14 => "00010000", -- ADD
-		15 => x"00",
-
-		16 => "00000111", -- MOV A, ACC
-		17 => x"00",
-
-		18 => "11000000", -- JZ 0x00 (0xFE + 0x02 == 0x00)
-		19 => x"FE",
-
-		20 => "00011011", -- J 0x0E (0x0C + 0x02 == 0x0E)
-		21 => x"0C",
-
-		-- data
-		128 => x"0B",
-		129 => x"02",
-
-		others=>"00000000");
+	SIGNAL mem : mem_type := initial_contents;
 BEGIN
 	storage : PROCESS(ce, we, oe, addr)
 	BEGIN
@@ -66,4 +40,6 @@ BEGIN
 			data <= (others => 'L');
 		END IF;
 	END PROCESS;
+
+	contents <= mem;
 END ARCHITECTURE;

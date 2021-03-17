@@ -200,6 +200,7 @@ BEGIN
 				reg_a_we <= '0';
 				mem_we <= '0';
 				reg_pc_we <= '0';
+				alu_we <= '0';
 				state <= EXECUTE_CLEANUP;
 			WHEN EXECUTE_CLEANUP =>
 				mem_ce <= '0';

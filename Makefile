@@ -7,23 +7,27 @@ SRC += cpu.vhdl
 
 SRC += tb_memory.vhdl
 SRC += tb_clock.vhdl
-SRC += tb_loopTest.vhdl
+SRC += tb_mux.vhdl
+SRC += tb_alu.vhdl
+SRC += tb_register.vhdl
+SRC += tb_cpu_increment.vhdl
+SRC += tb_cpu_conditional.vhdl
 
 FLAGS  = --ieee=synopsys
 FLAGS += -fexplicit --std=08
 
-ELABORATE = tb_loopTest
+TESTS=tb_mux tb_alu tb_register tb_cpu_increment tb_cpu_conditional
 
-all: run
+all: analyze test
 
-analyze: $(SRC)
+analyze:
 	@echo "Analyzing..."
 	ghdl -a $(FLAGS) $(SRC)
 
-elaborate: analyze
-	@echo "Elaborating..."
-	ghdl -e $(FLAGS) $(ELABORATE)
+$(TESTS): analyze
+	@echo "Running test $@"
+	ghdl -e $(FLAGS) $@
+	ghdl -r $(FLAGS) $@ --wave=$@.ghw
+	@echo "Test $@ OK"
 
-run: elaborate
-	@echo "Running... Press CTRL-C to stop"
-	ghdl -r $(FLAGS) $(ELABORATE) --wave=wave.ghw
+test: $(TESTS)
