@@ -4,20 +4,20 @@ use ieee.numeric_std.all;
 use std.env.finish;
 use work.tb_memory_type_pkg.all;
 
-ENTITY tb_cpu_conditional IS
-END ENTITY;
+entity tb_cpu_conditional is
+end entity;
 
-ARCHITECTURE tb_cpu_conditional_arch OF tb_cpu_conditional IS
-	SIGNAL reset : std_logic := '0';
-	SIGNAL clk : std_logic := '0';
-	SIGNAL mem_ce : std_logic := '0';
-	SIGNAL mem_oe : std_logic := '0';
-	SIGNAL mem_we : std_logic := '0';
-	SIGNAL data_bus : std_logic_vector(7 downto 0) := x"00";
-	SIGNAL addr_bus : std_logic_vector(7 downto 0) := x"00";
-	SIGNAL mem_contents : mem_type;
+architecture tb_cpu_conditional_arch of tb_cpu_conditional is
+	signal reset : std_logic := '0';
+	signal clk : std_logic := '0';
+	signal mem_ce : std_logic := '0';
+	signal mem_oe : std_logic := '0';
+	signal mem_we : std_logic := '0';
+	signal data_bus : std_logic_vector(7 downto 0) := x"00";
+	signal addr_bus : std_logic_vector(7 downto 0) := x"00";
+	signal mem_contents : mem_type;
 
-	SIGNAL initial_memory : mem_type := (
+	signal initial_memory : mem_type := (
 		0 => "01000011", -- MOVE A, [0x80]
 		1 => x"80",
 
@@ -83,12 +83,12 @@ ARCHITECTURE tb_cpu_conditional_arch OF tb_cpu_conditional IS
 
 		others=>"00000000");
 
-BEGIN
-	clk1 : ENTITY work.tb_clock port map(
+begin
+	clk1 : entity work.tb_clock port map(
 		clk => clk
 	);
 
-	mem1 : ENTITY work.tb_memory
+	mem1 : entity work.tb_memory
 	generic map (
 		initial_contents => initial_memory
 	)
@@ -101,7 +101,7 @@ BEGIN
 		contents => mem_contents
 	);
 
-	dut : ENTITY work.cpu port map(
+	dut : entity work.cpu port map(
 		reset => reset,
 		clk => clk,
 		mem_ce => mem_ce,
@@ -111,8 +111,8 @@ BEGIN
 		addr_bus => addr_bus
 	);
 
-	test : PROCESS
-	BEGIN
+	test : process
+	begin
 		wait for 20 ns;
 		reset <= '1';
 
@@ -121,7 +121,7 @@ BEGIN
 		assert mem_contents(145) = x"01" report "Wrong value in second JZ test" severity failure;
 
 		finish;
-	END PROCESS;
-END ARCHITECTURE;
+	end process;
+end architecture;
 
 

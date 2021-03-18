@@ -2,32 +2,32 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-ENTITY alu IS
-	PORT(
-		reset  : IN std_logic;
-		clk    : IN std_logic;
-		we     : IN std_logic;
-		in1    : IN std_logic_vector(7 downto 0);
-		in2    : IN std_logic_vector(7 downto 0);
-		sum    : OUT std_logic_vector(7 downto 0);
-		zero   : OUT std_logic
+entity alu is
+	port(
+		reset  : in std_logic;
+		clk    : in std_logic;
+		we     : in std_logic;
+		in1    : in std_logic_vector(7 downto 0);
+		in2    : in std_logic_vector(7 downto 0);
+		sum    : out std_logic_vector(7 downto 0);
+		zero   : out std_logic
 	);
-END ENTITY;
+end entity;
 
-ARCHITECTURE alu_arch OF alu IS
-BEGIN
-	step : PROCESS(clk, reset)
-	BEGIN
-		IF reset = '0' THEN
+architecture alu_arch of alu is
+begin
+	step : process(clk, reset)
+	begin
+		if reset = '0' then
 			sum <= (others => '0');
 			zero <= '0';
-		ELSIF rising_edge(clk) AND we = '1' THEN
-			IF unsigned(in1) + unsigned(in2) = "00000000" THEN
+		elsif rising_edge(clk) and we = '1' then
+			if unsigned(in1) + unsigned(in2) = "00000000" then
 				zero <= '1';
-			ELSE
+			else
 				zero <= '0';
-			END IF;
+			end if;
 			sum <= std_logic_vector(unsigned(in1) + unsigned(in2));
-		END IF;
-	END PROCESS;
-END;
+		end if;
+	end process;
+end;

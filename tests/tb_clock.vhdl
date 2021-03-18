@@ -1,19 +1,19 @@
 library ieee;
 use ieee.std_logic_1164.all;
 
-ENTITY tb_clock IS
+entity tb_clock is
 	port(
-		clk : OUT std_logic := '0'
+		clk : out std_logic := '0'
 	);
-END ENTITY;
+end entity;
 
-ARCHITECTURE tb_clock_arch OF tb_clock IS
-BEGIN
-	clk_generator : PROCESS
-	BEGIN
+architecture tb_clock_arch of tb_clock is
+begin
+	clk_generator : process
+	begin
 		clk <= '0';
-		WAIT FOR 5 ns;
+		wait for 5 ns;
 		clk <= '1';
-		WAIT FOR 5 ns;
-	END PROCESS;
-END ARCHITECTURE;
+		wait for 5 ns;
+	end process;
+end architecture;

@@ -2,24 +2,24 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-ENTITY cpu_register IS
+entity cpu_register is
 	port(
-		reset  : IN std_logic;
-		clk    : IN std_logic;
-		we     : IN std_logic;
-		data   : IN std_logic_vector(7 downto 0);
-		output : OUT std_logic_vector(7 downto 0)
+		reset  : in std_logic;
+		clk    : in std_logic;
+		we     : in std_logic;
+		data   : in std_logic_vector(7 downto 0);
+		output : out std_logic_vector(7 downto 0)
 	);
-END ENTITY;
+end entity;
 
-ARCHITECTURE cpu_register_arch OF cpu_register IS
-BEGIN
-	step : PROCESS (reset, clk)
-	BEGIN
-		IF reset = '0' THEN
+architecture cpu_register_arch of cpu_register is
+begin
+	step : process (reset, clk)
+	begin
+		if reset = '0' then
 			output <= (others => '0');
-		ELSIF rising_edge(clk) AND we = '1' THEN
+		elsif rising_edge(clk) and we = '1' then
 			output <= data;
-		END IF;
-	END PROCESS;
-END;
+		end if;
+	end process;
+end;

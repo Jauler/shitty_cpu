@@ -3,18 +3,18 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 use std.env.finish;
 
-ENTITY tb_register IS
-END ENTITY;
+entity tb_register is
+end entity;
 
-ARCHITECTURE tb_register_arch OF tb_register IS
-	SIGNAL reset  : std_logic := '0';
-	SIGNAL clk    : std_logic := '0';
-	SIGNAL we     : std_logic := '0';
-	SIGNAL data   : std_logic_vector(7 downto 0) := x"00";
-	SIGNAL output : std_logic_vector(7 downto 0) := x"00";
+architecture tb_register_arch of tb_register is
+	signal reset  : std_logic := '0';
+	signal clk    : std_logic := '0';
+	signal we     : std_logic := '0';
+	signal data   : std_logic_vector(7 downto 0) := x"00";
+	signal output : std_logic_vector(7 downto 0) := x"00";
 
-BEGIN
-	dut : ENTITY work.cpu_register port map(
+begin
+	dut : entity work.cpu_register port map(
 		reset => reset,
 		clk => clk,
 		we => we,
@@ -22,8 +22,8 @@ BEGIN
 		output => output
 	);
 
-	test : PROCESS
-	BEGIN
+	test : process
+	begin
 		wait for 1 ns;
 		assert output = x"00" report "Wrong output with reset" severity failure;
 
@@ -84,7 +84,7 @@ BEGIN
 		assert output = x"85" report "Wrong output on disabled we" severity failure;
 
 		finish;
-	END PROCESS;
-END ARCHITECTURE;
+	end process;
+end architecture;
 
 

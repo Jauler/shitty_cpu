@@ -3,19 +3,19 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 use std.env.finish;
 
-ENTITY tb_alu IS
-END ENTITY;
+entity tb_alu is
+end entity;
 
-ARCHITECTURE tb_alu_arch OF tb_alu IS
-	SIGNAL reset  : std_logic := '0';
-	SIGNAL clk    : std_logic := '0';
-	SIGNAL we     : std_logic := '0';
-	SIGNAL in1    : std_logic_vector(7 downto 0) := x"00";
-	SIGNAL in2    : std_logic_vector(7 downto 0) := x"00";
-	SIGNAL sum    : std_logic_vector(7 downto 0) := x"00";
-	SIGNAL zero   : std_logic;
-BEGIN
-	dut : ENTITY work.alu port map(
+architecture tb_alu_arch of tb_alu is
+	signal reset  : std_logic := '0';
+	signal clk    : std_logic := '0';
+	signal we     : std_logic := '0';
+	signal in1    : std_logic_vector(7 downto 0) := x"00";
+	signal in2    : std_logic_vector(7 downto 0) := x"00";
+	signal sum    : std_logic_vector(7 downto 0) := x"00";
+	signal zero   : std_logic;
+begin
+	dut : entity work.alu port map(
 		reset => reset,
 		clk => clk,
 		we => we,
@@ -25,8 +25,8 @@ BEGIN
 		zero => zero
 	);
 
-	test : PROCESS
-	BEGIN
+	test : process
+	begin
 		wait for 1 ns;
 		assert sum = x"00" report "Wrong sum when disabled" severity failure;
 		assert zero = '0' report "Wrong zero signal when disabled";
@@ -78,7 +78,7 @@ BEGIN
 		assert zero = '1' report "Wrong second zero";
 
 		finish;
-	END PROCESS;
-END ARCHITECTURE;
+	end process;
+end architecture;
 
 
