@@ -13,11 +13,9 @@ entity cpu is
 		-- Memory interface
 		mem_clk : out std_logic;
 		mem_we : out std_logic;
-		mem_data : in std_logic_vector(7 downto 0);
-
-		-- busses
-		data_bus : out std_logic_vector(7 downto 0);
-		addr_bus : out std_logic_vector(7 downto 0)
+		mem_data_in : in std_logic_vector(7 downto 0);
+		mem_data_out : out std_logic_vector(7 downto 0);
+		mem_addr : out std_logic_vector(7 downto 0)
 	);
 end entity;
 
@@ -45,6 +43,10 @@ architecture cpu_arch of cpu is
 
 	-- decoder outputs
 	signal decoder_bus_out : std_logic_vector(7 downto 0);
+
+	-- busses
+	signal data_bus : std_logic_vector(7 downto 0);
+	signal addr_bus : std_logic_vector(7 downto 0);
 
 begin
 	pc_reg1 : entity work.cpu_register port map(
@@ -98,7 +100,7 @@ begin
 		in4 => reg_operand_out,
 		in5 => reg_pc_out,
 		in6 => decoder_bus_out,
-		in7 => mem_data,
+		in7 => mem_data_in,
 		in8 => alu_out,
 		sel => data_mux_sel,
 		output => data_bus);
@@ -110,7 +112,7 @@ begin
 		in4 => reg_operand_out,
 		in5 => reg_pc_out,
 		in6 => decoder_bus_out,
-		in7 => mem_data,
+		in7 => mem_data_in,
 		in8 => alu_out,
 		sel => addr_mux_sel,
 		output => addr_bus);
@@ -144,5 +146,8 @@ begin
 
 		-- decoder bus output
 		decoder_bus_out => decoder_bus_out);
+
+	mem_addr <= addr_bus;
+	mem_data_out <= data_bus;
 end architecture;
 

@@ -106,9 +106,9 @@ begin
 		clk => clk,
 		mem_clk => mem_clk,
 		mem_we => mem_we,
-		mem_data => mem_data,
-		data_bus => data_bus,
-		addr_bus => addr_bus
+		mem_data_in => mem_data,
+		mem_data_out => data_bus,
+		mem_addr => addr_bus
 	);
 
 	test : process

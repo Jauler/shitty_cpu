@@ -135,9 +135,7 @@ begin
 					addr_mux_sel <= instruction (5 downto 3);
 					mem_we <= '1';
 				when INSTR_CONDITIONAL =>
-					if alu_zero = '1' then
-						data_mux_sel <= "011"; -- operand value into data bus
-					end if;
+					data_mux_sel <= "011"; -- operand value into data bus
 				when others =>
 				end case;
 				state <= EXECUTE_START_WRITE;
