@@ -31,9 +31,7 @@ entity decoder is
 
 		-- muxes control
 		data_mux_sel : out std_logic_vector(2 downto 0);
-		data_mux_en : out std_logic;
 		addr_mux_sel : out std_logic_vector(2 downto 0);
-		addr_mux_en : out std_logic;
 
 		-- Input into muxes from decoder
 		decoder_bus_out : out std_logic_vector(7 downto 0)
@@ -67,9 +65,7 @@ begin
 			reg_a_we <= '0';
 			reg_b_we <= '0';
 
-			data_mux_en <= '0';
 			data_mux_sel <= "000";
-			addr_mux_en <= '0';
 			addr_mux_sel <= "000";
 
 		elsif (rising_edge(clk)) then
@@ -80,9 +76,7 @@ begin
 				mem_we <= '0';
 				decoder_bus_out <= program_counter;
 				addr_mux_sel <= "101"; -- decoder addr out into addr bus
-				addr_mux_en <= '1';
 				data_mux_sel <= "110";
-				data_mux_en <= '1';
 				state <= FETCH_I_START_WRITE;
 			when FETCH_I_START_WRITE =>
 				mem_clk <= '1';
@@ -106,9 +100,7 @@ begin
 				mem_we <= '0';
 				decoder_bus_out <= std_logic_vector(unsigned(program_counter) + 1);
 				addr_mux_sel <= "101"; -- decoder addr out into addr bus
-				addr_mux_en <= '1';
 				data_mux_sel <= "110";
-				data_mux_en <= '1';
 				state <= FETCH_O_START_WRITE;
 			when FETCH_O_START_WRITE =>
 				mem_clk <= '1';
@@ -133,24 +125,18 @@ begin
 				-- type
 				case instruction (7 downto 6) is
 				when INSTR_REG_TO_REG =>
-					data_mux_en <= '1';
 					data_mux_sel <= instruction (2 downto 0);
 				when INSTR_MEM_TO_REG =>
 					addr_mux_sel <= instruction (2 downto 0);
-					addr_mux_en <= '1';
 					data_mux_sel <= "110";
-					data_mux_en <= '1';
 					mem_we <= '0';
 				when INSTR_REG_TO_MEM =>
 					data_mux_sel <= instruction (2 downto 0);
-					data_mux_en <= '1';
 					addr_mux_sel <= instruction (5 downto 3);
-					addr_mux_en <= '1';
 					mem_we <= '1';
 				when INSTR_CONDITIONAL =>
 					if alu_zero = '1' then
 						data_mux_sel <= "011"; -- operand value into data bus
-						data_mux_en <= '1';
 					end if;
 				when others =>
 				end case;
@@ -209,7 +195,6 @@ begin
 				-- Increment PC by 2
 				decoder_bus_out <= std_logic_vector(unsigned(program_counter) + 2);
 				data_mux_sel <= "101"; -- decoder data into data bus
-				data_mux_en <= '1';
 				state <= INCREMENT_START_WRITE;
 			when INCREMENT_START_WRITE =>
 				reg_pc_we <= '1';
@@ -220,7 +205,6 @@ begin
 				reg_pc_we <= '0';
 				state <= INCREMENT_CLEANUP;
 			when INCREMENT_CLEANUP =>
-				data_mux_en <= '0';
 				state <= FETCH_I_SETUP;
 			end case;
 		end if;

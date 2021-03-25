@@ -24,9 +24,7 @@ end entity;
 architecture cpu_arch of cpu is
 	-- internal busses multiplexers control
 	signal data_mux_sel : std_logic_vector(2 downto 0);
-	signal data_mux_en  : std_logic;
 	signal addr_mux_sel : std_logic_vector(2 downto 0);
-	signal addr_mux_en  : std_logic;
 
 	-- register signals
 	signal reg_pc_we : std_logic;
@@ -102,7 +100,6 @@ begin
 		in6 => decoder_bus_out,
 		in7 => mem_data,
 		in8 => alu_out,
-		en => data_mux_en,
 		sel => data_mux_sel,
 		output => data_bus);
 
@@ -115,7 +112,6 @@ begin
 		in6 => decoder_bus_out,
 		in7 => mem_data,
 		in8 => alu_out,
-		en => addr_mux_en,
 		sel => addr_mux_sel,
 		output => addr_bus);
 
@@ -144,9 +140,7 @@ begin
 
 		-- muxes
 		data_mux_sel => data_mux_sel,
-		data_mux_en => data_mux_en,
 		addr_mux_sel => addr_mux_sel,
-		addr_mux_en => addr_mux_en,
 
 		-- decoder bus output
 		decoder_bus_out => decoder_bus_out);

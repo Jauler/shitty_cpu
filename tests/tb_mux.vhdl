@@ -16,7 +16,6 @@ architecture tb_mux_arch of tb_mux is
 	signal in7 : std_logic_vector(7 downto 0) := x"07";
 	signal in8 : std_logic_vector(7 downto 0) := x"08";
 
-	signal en : std_logic := '0';
 	signal sel : std_logic_vector(2 downto 0) := "000";
 
 	signal output : std_logic_vector(7 downto 0);
@@ -30,19 +29,13 @@ begin
 		in6 => in6,
 		in7 => in7,
 		in8 => in8,
-		en => en,
 		sel => sel,
 		output => output);
 
 	test : process
 	begin
-		en <= '0';
-		wait for 1 ns;
-		assert output = "LLLLLLLL" report "Wrong output with disabled en" severity failure;
-
 		for i in 0 to 7 loop
 			wait for 1 ns;
-			en <= '1';
 			sel <= std_logic_vector(to_unsigned(i, 3));
 			wait for 1 ns;
 			assert output = std_logic_vector(to_unsigned(i + 1, 8)) report "Wrong output" severity failure;
