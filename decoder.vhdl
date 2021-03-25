@@ -11,8 +11,7 @@ entity decoder is
 		clk : in std_logic;
 
 		-- memory control
-		mem_ce : out std_logic;
-		mem_oe : out std_logic;
+		mem_clk : out std_logic;
 		mem_we : out std_logic;
 
 		-- register control
@@ -59,8 +58,7 @@ begin
 	begin
 		if (reset = '0') then
 			state <= FETCH_I_SETUP;
-			mem_ce <= '0';
-			mem_oe <= '0';
+			mem_clk <= '0';
 			mem_we <= '0';
 
 			reg_pc_we <= '0';
@@ -79,26 +77,25 @@ begin
 
 			-- read instruction byte into register
 			when FETCH_I_SETUP =>
-				mem_ce <= '1';
-				mem_oe <= '1';
 				mem_we <= '0';
 				decoder_bus_out <= program_counter;
 				addr_mux_sel <= "101"; -- decoder addr out into addr bus
 				addr_mux_en <= '1';
+				data_mux_sel <= "110";
+				data_mux_en <= '1';
 				state <= FETCH_I_START_WRITE;
 			when FETCH_I_START_WRITE =>
-				reg_instruction_we <= '1';
+				mem_clk <= '1';
 				state <= FETCH_I_WRITE;
 			when FETCH_I_WRITE =>
+				reg_instruction_we <= '1';
 				state <= FETCH_I_END_WRITE;
 			when FETCH_I_END_WRITE =>
 				reg_instruction_we <= '0';
 				state <= FETCH_I_CLEANUP;
 			when FETCH_I_CLEANUP =>
-				mem_ce <= '0';
-				mem_oe <= '0';
+				mem_clk <= '0';
 				mem_we <= '0';
-				addr_mux_en <= '0';
 				state <= FETCH_O_SETUP;
 
 			-- All instructions contains operand
@@ -106,26 +103,25 @@ begin
 			-- Lets read that byte into operand
 			-- register
 			when FETCH_O_SETUP =>
-				mem_ce <= '1';
-				mem_oe <= '1';
 				mem_we <= '0';
 				decoder_bus_out <= std_logic_vector(unsigned(program_counter) + 1);
 				addr_mux_sel <= "101"; -- decoder addr out into addr bus
 				addr_mux_en <= '1';
+				data_mux_sel <= "110";
+				data_mux_en <= '1';
 				state <= FETCH_O_START_WRITE;
 			when FETCH_O_START_WRITE =>
-				reg_operand_we <= '1';
+				mem_clk <= '1';
 				state <= FETCH_O_WRITE;
 			when FETCH_O_WRITE =>
+				reg_operand_we <= '1';
 				state <= FETCH_O_END_WRITE;
 			when FETCH_O_END_WRITE =>
 				reg_operand_we <= '0';
 				state <= FETCH_O_CLEANUP;
 			when FETCH_O_CLEANUP =>
-				mem_ce <= '0';
-				mem_oe <= '0';
+				mem_clk <= '0';
 				mem_we <= '0';
-				addr_mux_en <= '0';
 				state <= EXECUTE_SETUP;
 
 
@@ -142,14 +138,15 @@ begin
 				when INSTR_MEM_TO_REG =>
 					addr_mux_sel <= instruction (2 downto 0);
 					addr_mux_en <= '1';
-					mem_ce <= '1';
-					mem_oe <= '1';
+					data_mux_sel <= "110";
+					data_mux_en <= '1';
 					mem_we <= '0';
 				when INSTR_REG_TO_MEM =>
 					data_mux_sel <= instruction (2 downto 0);
 					data_mux_en <= '1';
 					addr_mux_sel <= instruction (5 downto 3);
 					addr_mux_en <= '1';
+					mem_we <= '1';
 				when INSTR_CONDITIONAL =>
 					if alu_zero = '1' then
 						data_mux_sel <= "011"; -- operand value into data bus
@@ -159,6 +156,15 @@ begin
 				end case;
 				state <= EXECUTE_START_WRITE;
 			when EXECUTE_START_WRITE =>
+				case instruction (7 downto 6) is
+				when INSTR_MEM_TO_REG =>
+					mem_clk <= '1';
+				when INSTR_REG_TO_MEM =>
+					mem_clk <= '1';
+				when others =>
+				end case;
+				state <= EXECUTE_WRITE;
+			when EXECUTE_WRITE =>
 				case instruction (7 downto 6) is
 				when INSTR_REG_TO_REG =>
 					case instruction (4 downto 3) is
@@ -177,17 +183,14 @@ begin
 					when others =>
 					end case;
 				when INSTR_REG_TO_MEM =>
-					mem_ce <= '1';
-					mem_oe <= '0';
-					mem_we <= '1';
+					mem_clk <= '0';
+					mem_we <= '0';
 				when INSTR_CONDITIONAL =>
 					if alu_zero = '1' then
 						reg_pc_we <= '1';
 					end if;
 				when others =>
 				end case;
-				state <= EXECUTE_WRITE;
-			when EXECUTE_WRITE =>
 				state <= EXECUTE_END_WRITE;
 			when EXECUTE_END_WRITE =>
 				reg_pc_we <= '0';
@@ -198,10 +201,7 @@ begin
 				alu_we <= '0';
 				state <= EXECUTE_CLEANUP;
 			when EXECUTE_CLEANUP =>
-				mem_ce <= '0';
-				mem_oe <= '0';
-				data_mux_en <= '0';
-				addr_mux_en <= '0';
+				mem_clk <= '0';
 				state <= INCREMENT_SETUP;
 
 			-- Increment program counter by 2
@@ -222,7 +222,6 @@ begin
 			when INCREMENT_CLEANUP =>
 				data_mux_en <= '0';
 				state <= FETCH_I_SETUP;
-
 			end case;
 		end if;
 	end process;

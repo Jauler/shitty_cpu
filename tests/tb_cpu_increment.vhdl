@@ -10,9 +10,9 @@ end entity;
 architecture tb_cpu_increment_arch of tb_cpu_increment is
 	signal reset : std_logic := '0';
 	signal clk : std_logic := '0';
-	signal mem_ce : std_logic := '0';
-	signal mem_oe : std_logic := '0';
+	signal mem_clk : std_logic := '0';
 	signal mem_we : std_logic := '0';
+	signal mem_data : std_logic_vector(7 downto 0) := x"00";
 	signal data_bus : std_logic_vector(7 downto 0) := x"00";
 	signal addr_bus : std_logic_vector(7 downto 0) := x"00";
 	signal mem_contents : mem_type;
@@ -52,10 +52,10 @@ begin
 		initial_contents => initial_memory
 	)
 	port map (
-		ce => mem_ce,
+		clk => mem_clk,
 		we => mem_we,
-		oe => mem_oe,
-		data => data_bus,
+		data_out => mem_data,
+		data_in => data_bus,
 		addr => addr_bus,
 		contents => mem_contents
 	);
@@ -63,9 +63,9 @@ begin
 	dut : entity work.cpu port map(
 		reset => reset,
 		clk => clk,
-		mem_ce => mem_ce,
-		mem_oe => mem_oe,
+		mem_clk => mem_clk,
 		mem_we => mem_we,
+		mem_data => mem_data,
 		data_bus => data_bus,
 		addr_bus => addr_bus
 	);

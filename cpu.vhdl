@@ -11,13 +11,13 @@ entity cpu is
 		clk : in std_logic;
 
 		-- Memory interface
-		mem_ce : out std_logic;
-		mem_oe : out std_logic;
+		mem_clk : out std_logic;
 		mem_we : out std_logic;
+		mem_data : in std_logic_vector(7 downto 0);
 
 		-- busses
-		data_bus : inout std_logic_vector(7 downto 0);
-		addr_bus : inout std_logic_vector(7 downto 0)
+		data_bus : out std_logic_vector(7 downto 0);
+		addr_bus : out std_logic_vector(7 downto 0)
 	);
 end entity;
 
@@ -100,7 +100,7 @@ begin
 		in4 => reg_operand_out,
 		in5 => reg_pc_out,
 		in6 => decoder_bus_out,
-		in7 => x"00", -- unused
+		in7 => mem_data,
 		in8 => alu_out,
 		en => data_mux_en,
 		sel => data_mux_sel,
@@ -113,7 +113,7 @@ begin
 		in4 => reg_operand_out,
 		in5 => reg_pc_out,
 		in6 => decoder_bus_out,
-		in7 => x"00", -- unused
+		in7 => mem_data,
 		in8 => alu_out,
 		en => addr_mux_en,
 		sel => addr_mux_sel,
@@ -124,8 +124,7 @@ begin
 		clk => clk,
 
 		-- memory and busses
-		mem_ce => mem_ce,
-		mem_oe => mem_oe,
+		mem_clk => mem_clk,
 		mem_we => mem_we,
 
 		-- register control

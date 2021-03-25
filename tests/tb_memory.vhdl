@@ -16,10 +16,10 @@ entity tb_memory is
 		initial_contents : mem_type
 	);
 	port(
-		ce : in std_logic;
+		clk : in std_logic;
 		we : in std_logic;
-		oe : in std_logic;
-		data : inout std_logic_vector(7 downto 0);
+		data_in : in std_logic_vector(7 downto 0);
+		data_out : out std_logic_vector(7 downto 0);
 		addr : in std_logic_vector(7 downto 0);
 		contents : out mem_type := initial_contents
 	);
@@ -28,16 +28,12 @@ end entity;
 architecture tb_memory_arch of tb_memory is
 	signal mem : mem_type := initial_contents;
 begin
-	storage : process(ce, we, oe, addr)
+	storage : process(clk, we, data_in, addr)
 	begin
-		if ce = '1' and we = '1' and oe = '0' then
-			mem(to_integer(unsigned(addr))) <= data;
-		elsif ce = '1' and we = '0' and oe = '1' then
-			data <= mem(to_integer(unsigned(addr)));
-		end if;
-
-		if ce = '0' or oe = '0' then
-			data <= (others => 'L');
+		if rising_edge(clk) and we = '1' then
+			mem(to_integer(unsigned(addr))) <= data_in;
+		elsif rising_edge(clk) and we = '0' then
+			data_out <= mem(to_integer(unsigned(addr)));
 		end if;
 	end process;
 
