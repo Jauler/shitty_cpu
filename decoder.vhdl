@@ -37,8 +37,7 @@ entity decoder is
 		addr_mux_en : out std_logic;
 
 		-- Input into muxes from decoder
-		data_bus_out : out std_logic_vector(7 downto 0);
-		addr_bus_out : out std_logic_vector(7 downto 0)
+		decoder_bus_out : out std_logic_vector(7 downto 0)
 	);
 end entity;
 
@@ -83,8 +82,8 @@ begin
 				mem_ce <= '1';
 				mem_oe <= '1';
 				mem_we <= '0';
-				addr_bus_out <= program_counter;
-				addr_mux_sel <= "110"; -- decoder addr out into addr bus
+				decoder_bus_out <= program_counter;
+				addr_mux_sel <= "101"; -- decoder addr out into addr bus
 				addr_mux_en <= '1';
 				state <= FETCH_I_START_WRITE;
 			when FETCH_I_START_WRITE =>
@@ -110,8 +109,8 @@ begin
 				mem_ce <= '1';
 				mem_oe <= '1';
 				mem_we <= '0';
-				addr_bus_out <= std_logic_vector(unsigned(program_counter) + 1);
-				addr_mux_sel <= "110"; -- decoder addr out into addr bus
+				decoder_bus_out <= std_logic_vector(unsigned(program_counter) + 1);
+				addr_mux_sel <= "101"; -- decoder addr out into addr bus
 				addr_mux_en <= '1';
 				state <= FETCH_O_START_WRITE;
 			when FETCH_O_START_WRITE =>
@@ -208,7 +207,7 @@ begin
 			-- Increment program counter by 2
 			when INCREMENT_SETUP =>
 				-- Increment PC by 2
-				data_bus_out <= std_logic_vector(unsigned(program_counter) + 2);
+				decoder_bus_out <= std_logic_vector(unsigned(program_counter) + 2);
 				data_mux_sel <= "101"; -- decoder data into data bus
 				data_mux_en <= '1';
 				state <= INCREMENT_START_WRITE;
