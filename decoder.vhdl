@@ -11,7 +11,6 @@ entity decoder is
 		clk : in std_logic;
 
 		-- memory control
-		mem_clk : out std_logic;
 		mem_we : out std_logic;
 
 		-- register control
@@ -56,7 +55,6 @@ begin
 	begin
 		if (reset = '0') then
 			state <= FETCH_I_SETUP;
-			mem_clk <= '0';
 			mem_we <= '0';
 
 			reg_pc_we <= '0';
@@ -79,7 +77,6 @@ begin
 				data_mux_sel <= "110";
 				state <= FETCH_I_START_WRITE;
 			when FETCH_I_START_WRITE =>
-				mem_clk <= '1';
 				state <= FETCH_I_WRITE;
 			when FETCH_I_WRITE =>
 				reg_instruction_we <= '1';
@@ -88,7 +85,6 @@ begin
 				reg_instruction_we <= '0';
 				state <= FETCH_I_CLEANUP;
 			when FETCH_I_CLEANUP =>
-				mem_clk <= '0';
 				mem_we <= '0';
 				state <= FETCH_O_SETUP;
 
@@ -103,7 +99,6 @@ begin
 				data_mux_sel <= "110";
 				state <= FETCH_O_START_WRITE;
 			when FETCH_O_START_WRITE =>
-				mem_clk <= '1';
 				state <= FETCH_O_WRITE;
 			when FETCH_O_WRITE =>
 				reg_operand_we <= '1';
@@ -112,7 +107,6 @@ begin
 				reg_operand_we <= '0';
 				state <= FETCH_O_CLEANUP;
 			when FETCH_O_CLEANUP =>
-				mem_clk <= '0';
 				mem_we <= '0';
 				state <= EXECUTE_SETUP;
 
@@ -140,13 +134,6 @@ begin
 				end case;
 				state <= EXECUTE_START_WRITE;
 			when EXECUTE_START_WRITE =>
-				case instruction (7 downto 6) is
-				when INSTR_MEM_TO_REG =>
-					mem_clk <= '1';
-				when INSTR_REG_TO_MEM =>
-					mem_clk <= '1';
-				when others =>
-				end case;
 				state <= EXECUTE_WRITE;
 			when EXECUTE_WRITE =>
 				case instruction (7 downto 6) is
@@ -167,7 +154,6 @@ begin
 					when others =>
 					end case;
 				when INSTR_REG_TO_MEM =>
-					mem_clk <= '0';
 					mem_we <= '0';
 				when INSTR_CONDITIONAL =>
 					if alu_zero = '1' then
@@ -185,7 +171,6 @@ begin
 				alu_we <= '0';
 				state <= EXECUTE_CLEANUP;
 			when EXECUTE_CLEANUP =>
-				mem_clk <= '0';
 				state <= INCREMENT_SETUP;
 
 			-- Increment program counter by 2

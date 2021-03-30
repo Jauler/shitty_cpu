@@ -11,7 +11,6 @@ entity cpu is
 		clk : in std_logic;
 
 		-- Memory interface
-		mem_clk : out std_logic;
 		mem_we : out std_logic;
 		mem_data_in : in std_logic_vector(7 downto 0);
 		mem_data_out : out std_logic_vector(7 downto 0);
@@ -122,7 +121,6 @@ begin
 		clk => clk,
 
 		-- memory and busses
-		mem_clk => mem_clk,
 		mem_we => mem_we,
 
 		-- register control
