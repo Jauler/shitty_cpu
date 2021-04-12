@@ -18,7 +18,7 @@ So do not expect anything fancy like pipelines, interrupts, fancy maths or whate
 
 The need for simplicity basically dictated [von Neumann](https://en.wikipedia.org/wiki/Von_Neumann_architecture) architecture.
 Also in order to be able to do any kind of maths the minimum amount of registers required was two - and thus, A and B registers were born.
-And the "maths" I am talking about are just a simple addition of those two registers.
+The "maths" I am talking about here is just a simple addition of those two registers.
 Obviously because this is two's complement addition, just adding negated number will give as subtraction for free.
 For simplicitly I decided to ditch logic operations.
 
@@ -84,7 +84,7 @@ So our register should have:
 * write enable input
 * output
 
-So we basically I would like a "memory" which would remembers input value when clock is on the rising edge and write enable input is high.
+So basically I would like a "memory" which remembers input value when clock is on the rising edge and write enable input is high.
 And output should always represent the "remembered" value.
 
 This is how we can achieve this for single bit:
@@ -93,7 +93,7 @@ This is how we can achieve this for single bit:
 
 This is called D-flip flop.
 
-Again wider register can be achieved by connecting "control" (clock, write enable) inputs together for multiple flip flops and data input for separate bits connecting to separate flip flops.
+Again wider register can be achieved by connecting "control" (clock, write enable) inputs together for multiple flip flops and data inputs for separate bits connecting to separate flip flops.
 
 
 ### ALU
