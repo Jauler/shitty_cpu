@@ -19,10 +19,10 @@ So do not expect anything fancy like pipelines, interrupts, fancy maths or whate
 The need for simplicity basically dictated [von Neumann](https://en.wikipedia.org/wiki/Von_Neumann_architecture) architecture.
 Also in order to be able to do any kind of maths the minimum amount of registers required was two - and thus, A and B registers were born.
 The "maths" I am talking about here is just a simple addition of those two registers.
-Obviously because this is two's complement addition, just adding negated number will give as subtraction for free.
+Obviously because this is two's complement addition, just adding negated number will give us subtraction for free.
 For simplicitly I decided to ditch logic operations.
 
-To be turing complete - I will also need some conditional jumps which jumps to its destination only if the result of addition is zero.
+To be turing complete - I will also need some conditional branching, so basically jumps to some address only if the result of addition is zero.
 
 Because I will try to write at least one real program for this CPU (aka blink some LEDs), it would be quite nice to be able to address memory directly "inside" instructions.
 In the end this "requirement" ended up somewhat complicating CPU design, but, as a result, the instruction set became much more flexible.
@@ -39,9 +39,9 @@ I chose VHDL completely arbitrary, no preference for this over the other languag
 ## Components
 
 It turns out, that (simple) CPUs do not require that many components after all.
-In this CPU there basically are:
-* Multiplexers
-* Registers
+In this CPU there basically is:
+* A few Multiplexer
+* Some registers
 * ALU (although it does not do any logical operations, so this is more of AU than ALU :D)
 * Controller
 
@@ -69,7 +69,8 @@ This is an example 1 bit multiplexer out of pure logic elements:
 
 If we would like to build a multiplexer with wider inputs than one bit - we can simply copy this circuit multiple times.
 All respective selection pins from separate 1 bit muxes should be connected together and inputs to separate 1 bit muxes represent separate bits of input.
-And for our 8 bit CPU's we will be using a [multiplexer](mux.vhdl) with 8 seperate inputs (and 4 selector signals each) each of which is 8 bits wide.
+
+For our 8 bit CPU's we will be using a [multiplexer](mux.vhdl) with 8 seperate inputs (and 4 selector signals each) each of which is 8 bits wide.
 
 Note that VHDL most likely will synthesize multiplexer into something more complex, this is mostly for the idea.
 
