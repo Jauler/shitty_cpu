@@ -2,7 +2,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-entity decoder is
+entity controller is
 	port(
 		-- reset
 		reset : in std_logic;
@@ -32,12 +32,12 @@ entity decoder is
 		data_mux_sel : out std_logic_vector(2 downto 0);
 		addr_mux_sel : out std_logic_vector(2 downto 0);
 
-		-- Input into muxes from decoder
-		decoder_bus_out : out std_logic_vector(7 downto 0)
+		-- Input into muxes from controller
+		controller_bus_out : out std_logic_vector(7 downto 0)
 	);
 end entity;
 
-architecture decoder_arch of decoder is
+architecture controller_arch of controller is
 	constant INSTR_REG_TO_REG  : std_logic_vector(1 downto 0) := "00";
 	constant INSTR_MEM_TO_REG  : std_logic_vector(1 downto 0) := "01";
 	constant INSTR_REG_TO_MEM  : std_logic_vector(1 downto 0) := "10";
@@ -72,8 +72,8 @@ begin
 			-- read instruction byte into register
 			when FETCH_I_SETUP =>
 				mem_we <= '0';
-				decoder_bus_out <= program_counter;
-				addr_mux_sel <= "101"; -- decoder addr out into addr bus
+				controller_bus_out <= program_counter;
+				addr_mux_sel <= "101"; -- controller addr out into addr bus
 				data_mux_sel <= "110";
 				state <= FETCH_I_START_WRITE;
 			when FETCH_I_START_WRITE =>
@@ -94,8 +94,8 @@ begin
 			-- register
 			when FETCH_O_SETUP =>
 				mem_we <= '0';
-				decoder_bus_out <= std_logic_vector(unsigned(program_counter) + 1);
-				addr_mux_sel <= "101"; -- decoder addr out into addr bus
+				controller_bus_out <= std_logic_vector(unsigned(program_counter) + 1);
+				addr_mux_sel <= "101"; -- controller addr out into addr bus
 				data_mux_sel <= "110";
 				state <= FETCH_O_START_WRITE;
 			when FETCH_O_START_WRITE =>
@@ -176,8 +176,8 @@ begin
 			-- Increment program counter by 2
 			when INCREMENT_SETUP =>
 				-- Increment PC by 2
-				decoder_bus_out <= std_logic_vector(unsigned(program_counter) + 2);
-				data_mux_sel <= "101"; -- decoder data into data bus
+				controller_bus_out <= std_logic_vector(unsigned(program_counter) + 2);
+				data_mux_sel <= "101"; -- controller data into data bus
 				state <= INCREMENT_START_WRITE;
 			when INCREMENT_START_WRITE =>
 				reg_pc_we <= '1';

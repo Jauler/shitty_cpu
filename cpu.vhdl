@@ -40,8 +40,8 @@ architecture cpu_arch of cpu is
 	signal alu_zero   : std_logic;
 	signal alu_we     : std_logic;
 
-	-- decoder outputs
-	signal decoder_bus_out : std_logic_vector(7 downto 0);
+	-- controller outputs
+	signal controller_bus_out : std_logic_vector(7 downto 0);
 
 	-- busses
 	signal data_bus : std_logic_vector(7 downto 0);
@@ -98,7 +98,7 @@ begin
 		in3 => alu_out,
 		in4 => reg_operand_out,
 		in5 => reg_pc_out,
-		in6 => decoder_bus_out,
+		in6 => controller_bus_out,
 		in7 => mem_data_in,
 		in8 => alu_out,
 		sel => data_mux_sel,
@@ -110,13 +110,13 @@ begin
 		in3 => alu_out,
 		in4 => reg_operand_out,
 		in5 => reg_pc_out,
-		in6 => decoder_bus_out,
+		in6 => controller_bus_out,
 		in7 => mem_data_in,
 		in8 => alu_out,
 		sel => addr_mux_sel,
 		output => addr_bus);
 
-	decoder1 : entity work.decoder port map(
+	controller1 : entity work.controller port map(
 		reset => reset,
 		clk => clk,
 
@@ -142,8 +142,8 @@ begin
 		data_mux_sel => data_mux_sel,
 		addr_mux_sel => addr_mux_sel,
 
-		-- decoder bus output
-		decoder_bus_out => decoder_bus_out);
+		-- controller bus output
+		controller_bus_out => controller_bus_out);
 
 	mem_addr <= addr_bus;
 	mem_data_out <= data_bus;
