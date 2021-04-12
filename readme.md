@@ -68,7 +68,7 @@ This is an example 1 bit multiplexer out of pure logic elements:
 ![multiplexer_logic](img/mux.gif)
 
 If we would like to build a multiplexer with wider inputs than one bit - we can simply copy this circuit multiple times.
-All respective pins from separate 1 bit muxes should be connected together and inputs to separate 1bit muxes represent bits for each input.
+All respective selection pins from separate 1 bit muxes should be connected together and inputs to separate 1 bit muxes represent separate bits of input.
 And for our 8 bit CPU's we will be using a [multiplexer](mux.vhdl) with 8 seperate inputs (and 4 selector signals each) each of which is 8 bits wide.
 
 Note that VHDL most likely will synthesize multiplexer into something more complex, this is mostly for the idea.
