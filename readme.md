@@ -40,9 +40,10 @@ I chose VHDL completely arbitrary, no preference for this over the other languag
 
 It turns out, that (simple) CPUs do not require that many components after all.
 In this CPU there basically is:
-* A few Multiplexer
+* A few Multiplexers
 * Some registers
-* ALU (although it does not do any logical operations, so this is more of AU than ALU :D)
+* ALU
+* Memory
 * Controller
 
 ### Multiplexer
@@ -144,7 +145,29 @@ And chaining them together:
 
 ![adder2](img/adder2.gif)
 
-### Controller
 
-TODO
+### Memory
 
+For memory I will not be going into details.
+I will just describe how to use it and will leave it as a black box.
+
+Naturally we need some way to tell it when to write and when to read.
+This will be determined by a write enable signal.
+When write enable signal is low - memory will be reading.
+When write enable signal is high - memory will be writing.
+
+Reading and writing will always be happening on rising clock edge.
+
+And, obviously, address bus will select the address where to read or write.
+
+When writing - data will be "taken" from data input bus, and when reading - data will be "put" on data output bus.
+
+![memory](img/memory.png)
+
+
+---
+
+By now, only the controller is left.
+But I believe that it is easier to understand what it does and how it achieves what it needs after there is some idea how the rest of the components will be connected together.
+
+Therefore I will leave it for later stage.
