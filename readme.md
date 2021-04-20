@@ -102,8 +102,47 @@ Again wider register can be achieved by connecting "control" (clock, write enabl
 
 ### ALU
 
-TODO
+In this case ALU is perfoming only only one operation - adding numbers.
+So it is probably better to call it adder ¯\\_(ツ)_/¯, but oh well...
+ALU sounds fancier.
 
+As mentioned before we would like to have conditional jumps, therefore we will need to output some kind of signal indicating whether or not the jump should be taken.
+For this CPU that signal will indicate if the sum is zero.
+Other than that the ALU is simple adder.
+
+Lets start with adding two bits (a and b) together:
+
+|bit a|bit b|  output  |
+|---- |---- |----------|
+| L   | L   |     L    |
+| H   | L   |     H    |
+| L   | H   |     H    |
+| H   | H   |     L    |
+
+Note: that summing 1 and 1 together produces zero, as it "wraps around".
+
+The truth table above is just a XOR gate.
+This would be enough in order to add two bits together, but we would like to be able to chain these adders in order to add larger numbers (e.g. 8bit).
+In order to achieve this we will be adding three bits together instead of two, and also we will be outputing additional carry signal.
+
+|bit a|bit b|carry in| carry out |  output  |
+|---- |---- |  ----  | --------- |----------|
+|  L  |  L  |    L   |     L     |     L    |
+|  H  |  L  |    L   |     L     |     H    |
+|  L  |  H  |    L   |     L     |     H    |
+|  H  |  H  |    L   |     H     |     L    |
+|  L  |  L  |    H   |     L     |     H    |
+|  H  |  L  |    H   |     H     |     L    |
+|  L  |  H  |    H   |     H     |     L    |
+|  H  |  H  |    H   |     H     |     H    |
+
+We can achieve this with this schematic:
+
+![adder](img/adder.gif)
+
+And chaining them together:
+
+![adder2](img/adder2.gif)
 
 ### Controller
 
