@@ -8,6 +8,7 @@ end entity;
 
 architecture tb_counter_arch of tb_counter is
 	signal reset  : std_logic := '0';
+	signal clk    : std_logic := '0';
 	signal we     : std_logic := '0';
 	signal inc    : std_logic := '0';
 	signal data   : std_logic_vector(7 downto 0) := x"00";
@@ -16,6 +17,7 @@ architecture tb_counter_arch of tb_counter is
 begin
 	dut : entity work.counter port map(
 		reset => reset,
+		clk => clk,
 		we => we,
 		inc => inc,
 		data => data,
@@ -29,18 +31,30 @@ begin
 
 		wait for 1 ns;
 		reset <= '1';
+		wait for 1 ns;
+		clk <= '1';
+		wait for 1 ns;
+		clk <= '0';
 
 		wait for 1 ns;
 		assert output = x"00" report "wrong output with reset" severity failure;
 
 		wait for 1 ns;
 		data <= x"05";
+		wait for 1 ns;
+		clk <= '1';
+		wait for 1 ns;
+		clk <= '0';
 
 		wait for 1 ns;
 		assert output = x"00" report "wrong output without we" severity failure;
 
 		wait for 1 ns;
 		we <= '1';
+		wait for 1 ns;
+		clk <= '1';
+		wait for 1 ns;
+		clk <= '0';
 
 		wait for 1 ns;
 		assert output = x"05" report "wrong output" severity failure;
@@ -53,18 +67,30 @@ begin
 
 		wait for 1 ns;
 		we <= '0';
+		wait for 1 ns;
+		clk <= '1';
+		wait for 1 ns;
+		clk <= '0';
 
 		wait for 1 ns;
 		assert output = x"05" report "wrong output after falling we" severity failure;
 
 		wait for 1 ns;
 		inc <= '1';
+		wait for 1 ns;
+		clk <= '1';
+		wait for 1 ns;
+		clk <= '0';
 
 		wait for 1 ns;
 		assert output = x"06" report "wrong output after increment" severity failure;
 
 		wait for 1 ns;
 		inc <= '0';
+		wait for 1 ns;
+		clk <= '1';
+		wait for 1 ns;
+		clk <= '0';
 
 		wait for 1 ns;
 		assert output = x"06" report "wrong output after inc falling" severity failure;

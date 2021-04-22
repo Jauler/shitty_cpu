@@ -48,6 +48,7 @@ architecture cpu_arch of cpu is
 begin
 	pc_reg1 : entity work.counter port map(
 		reset => reset,
+		clk => clk,
 		we => reg_pc_we,
 		inc => reg_pc_inc,
 		data => data_bus,
@@ -55,30 +56,35 @@ begin
 
 	operand_reg1 : entity work.cpu_register port map(
 		reset => reset,
+		clk => clk,
 		we => reg_operand_we,
 		data => data_bus,
 		output => reg_operand_out);
 
 	instruction_reg1 : entity work.cpu_register port map(
 		reset => reset,
+		clk => clk,
 		we => reg_instruction_we,
 		data => data_bus,
 		output => reg_instruction_out);
 
 	reg1 : entity work.cpu_register port map(
 		reset => reset,
+		clk => clk,
 		we => reg_a_we,
 		data => data_bus,
 		output => reg_a_out);
 
 	reg2 : entity work.cpu_register port map(
 		reset => reset,
+		clk => clk,
 		we => reg_b_we,
 		data => data_bus,
 		output => reg_b_out);
 
 	alu1 : entity work.alu port map(
 		reset => reset,
+		clk => clk,
 		we => alu_we,
 		in1 => reg_a_out,
 		in2 => reg_b_out,
@@ -111,7 +117,7 @@ begin
 
 	controller1 : entity work.controller port map(
 		reset => reset,
-		clk => clk,
+		clk => not clk,
 
 		-- memory and busses
 		mem_we => mem_we,

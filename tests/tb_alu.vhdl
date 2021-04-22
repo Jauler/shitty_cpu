@@ -8,6 +8,7 @@ end entity;
 
 architecture tb_alu_arch of tb_alu is
 	signal reset  : std_logic := '0';
+	signal clk    : std_logic := '0';
 	signal we     : std_logic := '0';
 	signal in1    : std_logic_vector(7 downto 0) := x"00";
 	signal in2    : std_logic_vector(7 downto 0) := x"00";
@@ -16,6 +17,7 @@ architecture tb_alu_arch of tb_alu is
 begin
 	dut : entity work.alu port map(
 		reset => reset,
+		clk => clk,
 		we => we,
 		in1 => in1,
 		in2 => in2,
@@ -31,6 +33,10 @@ begin
 
 		wait for 1 ns;
 		reset <= '1';
+		wait for 1 ns;
+		clk <= '1';
+		wait for 1 ns;
+		clk <= '0';
 
 		wait for 1 ns;
 		in1 <= x"01";
@@ -41,6 +47,10 @@ begin
 
 		wait for 1 ns;
 		we <= '1';
+		wait for 1 ns;
+		clk <= '1';
+		wait for 1 ns;
+		clk <= '0';
 
 		wait for 1 ns;
 		assert sum = x"03" report "Wrong sum" severity failure;
@@ -48,6 +58,10 @@ begin
 
 		wait for 1 ns;
 		we <= '0';
+		wait for 1 ns;
+		clk <= '1';
+		wait for 1 ns;
+		clk <= '0';
 
 		wait for 1 ns;
 		assert sum = x"03" report "Wrong sum when after we falling edge" severity failure;
@@ -56,6 +70,10 @@ begin
 		wait for 1 ns;
 		in1 <= x"ff";
 		in2 <= x"01";
+		wait for 1 ns;
+		clk <= '1';
+		wait for 1 ns;
+		clk <= '0';
 
 		wait for 1 ns;
 		assert sum = x"03" report "Wrong sum when after input changed but no rising we" severity failure;
@@ -63,6 +81,10 @@ begin
 
 		wait for 1 ns;
 		we <= '1';
+		wait for 1 ns;
+		clk <= '1';
+		wait for 1 ns;
+		clk <= '0';
 
 		wait for 1 ns;
 		assert sum = x"00" report "Wrong second sum" severity failure;

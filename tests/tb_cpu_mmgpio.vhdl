@@ -81,7 +81,7 @@ begin
 		initial_contents => initial_memory
 	)
 	port map (
-		clk => not clk,
+		clk => clk,
 		we => mem_we,
 		data_out => mem_data,
 		data_in => data_bus,
