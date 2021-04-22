@@ -8,7 +8,6 @@ end entity;
 
 architecture tb_register_arch of tb_register is
 	signal reset  : std_logic := '0';
-	signal clk    : std_logic := '0';
 	signal we     : std_logic := '0';
 	signal data   : std_logic_vector(7 downto 0) := x"00";
 	signal output : std_logic_vector(7 downto 0) := x"00";
@@ -16,7 +15,6 @@ architecture tb_register_arch of tb_register is
 begin
 	dut : entity work.cpu_register port map(
 		reset => reset,
-		clk => clk,
 		we => we,
 		data => data,
 		output => output
@@ -37,16 +35,10 @@ begin
 		data <= x"05";
 
 		wait for 1 ns;
-		assert output = x"00" report "Wrong output without we and rising clk" severity failure;
+		assert output = x"00" report "Wrong output without we" severity failure;
 
 		wait for 1 ns;
 		we <= '1';
-
-		wait for 1 ns;
-		assert output = x"00" report "Wrong output without rising clk" severity failure;
-
-		wait for 1 ns;
-		clk <= '1';
 
 		wait for 1 ns;
 		assert output = x"05" report "Wrong output" severity failure;
@@ -58,30 +50,16 @@ begin
 		assert output = x"05" report "Wrong output after input change" severity failure;
 
 		wait for 1 ns;
-		clk <= '0';
-
-		wait for 1 ns;
-		assert output = x"05" report "Wrong output after falling clk" severity failure;
-
-		wait for 1 ns;
-		clk <= '1';
-
-		wait for 1 ns;
-		assert output = x"85" report "Wrong output after falling clk" severity failure;
-
-		wait for 1 ns;
-		clk <= '0';
 		we <= '0';
-		data <= x"aa";
 
 		wait for 1 ns;
-		assert output = x"85" report "Wrong output after second falling clk" severity failure;
+		assert output = x"05" report "Wrong output after falling we" severity failure;
 
 		wait for 1 ns;
-		clk <= '1';
+		we <= '1';
 
 		wait for 1 ns;
-		assert output = x"85" report "Wrong output on disabled we" severity failure;
+		assert output = x"85" report "Wrong output after rising we" severity failure;
 
 		finish;
 	end process;

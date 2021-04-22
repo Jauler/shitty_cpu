@@ -5,7 +5,6 @@ use ieee.numeric_std.all;
 entity alu is
 	port(
 		reset  : in std_logic;
-		clk    : in std_logic;
 		we     : in std_logic;
 		in1    : in std_logic_vector(7 downto 0);
 		in2    : in std_logic_vector(7 downto 0);
@@ -16,12 +15,12 @@ end entity;
 
 architecture alu_arch of alu is
 begin
-	step : process(clk, reset)
+	step : process(reset, we)
 	begin
 		if reset = '0' then
 			sum <= (others => '0');
 			zero <= '0';
-		elsif rising_edge(clk) and we = '1' then
+		elsif rising_edge(we) then
 			if unsigned(in1) + unsigned(in2) = "00000000" then
 				zero <= '1';
 			else

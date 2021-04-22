@@ -24,8 +24,9 @@ architecture cpu_arch of cpu is
 	signal addr_mux_sel : std_logic_vector(2 downto 0);
 
 	-- register signals
-	signal reg_pc_we : std_logic;
-	signal reg_pc_out: std_logic_vector(7 downto 0);
+	signal reg_pc_inc : std_logic;
+	signal reg_pc_we  : std_logic;
+	signal reg_pc_out : std_logic_vector(7 downto 0);
 	signal reg_operand_we : std_logic;
 	signal reg_operand_out: std_logic_vector(7 downto 0);
 	signal reg_instruction_we : std_logic;
@@ -40,52 +41,44 @@ architecture cpu_arch of cpu is
 	signal alu_zero   : std_logic;
 	signal alu_we     : std_logic;
 
-	-- controller outputs
-	signal controller_bus_out : std_logic_vector(7 downto 0);
-
 	-- busses
 	signal data_bus : std_logic_vector(7 downto 0);
 	signal addr_bus : std_logic_vector(7 downto 0);
 
 begin
-	pc_reg1 : entity work.cpu_register port map(
+	pc_reg1 : entity work.counter port map(
 		reset => reset,
-		clk => clk,
 		we => reg_pc_we,
+		inc => reg_pc_inc,
 		data => data_bus,
 		output => reg_pc_out);
 
 	operand_reg1 : entity work.cpu_register port map(
 		reset => reset,
-		clk => clk,
 		we => reg_operand_we,
 		data => data_bus,
 		output => reg_operand_out);
 
 	instruction_reg1 : entity work.cpu_register port map(
 		reset => reset,
-		clk => clk,
 		we => reg_instruction_we,
 		data => data_bus,
 		output => reg_instruction_out);
 
 	reg1 : entity work.cpu_register port map(
 		reset => reset,
-		clk => clk,
 		we => reg_a_we,
 		data => data_bus,
 		output => reg_a_out);
 
 	reg2 : entity work.cpu_register port map(
 		reset => reset,
-		clk => clk,
 		we => reg_b_we,
 		data => data_bus,
 		output => reg_b_out);
 
 	alu1 : entity work.alu port map(
 		reset => reset,
-		clk => clk,
 		we => alu_we,
 		in1 => reg_a_out,
 		in2 => reg_b_out,
@@ -98,9 +91,9 @@ begin
 		in3 => alu_out,
 		in4 => reg_operand_out,
 		in5 => reg_pc_out,
-		in6 => controller_bus_out,
-		in7 => mem_data_in,
-		in8 => alu_out,
+		in6 => mem_data_in,
+		in7 => (others => '0'),
+		in8 => (others => '0'),
 		sel => data_mux_sel,
 		output => data_bus);
 
@@ -110,9 +103,9 @@ begin
 		in3 => alu_out,
 		in4 => reg_operand_out,
 		in5 => reg_pc_out,
-		in6 => controller_bus_out,
-		in7 => mem_data_in,
-		in8 => alu_out,
+		in6 => mem_data_in,
+		in7 => (others => '0'),
+		in8 => (others => '0'),
 		sel => addr_mux_sel,
 		output => addr_bus);
 
@@ -125,6 +118,7 @@ begin
 
 		-- register control
 		reg_pc_we => reg_pc_we,
+		reg_pc_inc => reg_pc_inc,
 		reg_instruction_we => reg_instruction_we,
 		reg_operand_we => reg_operand_we,
 		reg_a_we => reg_a_we,
@@ -132,7 +126,6 @@ begin
 
 		-- instruction register
 		instruction => reg_instruction_out,
-		program_counter => reg_pc_out,
 
 		-- alu
 		alu_zero => alu_zero,
@@ -140,10 +133,8 @@ begin
 
 		-- muxes
 		data_mux_sel => data_mux_sel,
-		addr_mux_sel => addr_mux_sel,
-
-		-- controller bus output
-		controller_bus_out => controller_bus_out);
+		addr_mux_sel => addr_mux_sel
+	);
 
 	mem_addr <= addr_bus;
 	mem_data_out <= data_bus;

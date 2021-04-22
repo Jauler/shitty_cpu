@@ -4,10 +4,10 @@ use ieee.numeric_std.all;
 use std.env.finish;
 use work.tb_memory_type_pkg.all;
 
-entity tb_cpu_increment is
+entity tb_cpu_mmgpio is
 end entity;
 
-architecture tb_cpu_increment_arch of tb_cpu_increment is
+architecture tb_cpu_mmgpio_arch of tb_cpu_mmgpio is
 	signal reset : std_logic := '0';
 	signal clk : std_logic := '0';
 	signal mem_we : std_logic := '0';
@@ -17,29 +17,58 @@ architecture tb_cpu_increment_arch of tb_cpu_increment is
 	signal mem_contents : mem_type;
 
 	signal initial_memory : mem_type := (
-		0 => "01011000", -- MOVE A, [0x81]
-		1 => x"81",
 
-		2 => "00011001", -- MOVE B, 0x01
-		3 => x"01",
+0 => x"03",
+1 => x"ff",
+2 => x"98",
+3 => x"fc",
+4 => x"03",
+5 => x"08",
+6 => x"0b",
+7 => x"27",
+8 => x"10",
+9 => x"00",
+10 => x"4a",
+11 => x"00",
+12 => x"99",
+13 => x"fd",
+14 => x"0b",
+15 => x"ff",
+16 => x"10",
+17 => x"00",
+18 => x"02",
+19 => x"00",
+20 => x"c0",
+21 => x"fe",
+22 => x"98",
+23 => x"80",
+24 => x"03",
+25 => x"0a",
+26 => x"0b",
+27 => x"ff",
+28 => x"10",
+29 => x"00",
+30 => x"02",
+31 => x"00",
+32 => x"c0",
+33 => x"22",
+34 => x"1b",
+35 => x"1a",
+36 => x"43",
+37 => x"80",
+38 => x"1b",
+39 => x"04",
+40 => x"80",
+41 => x"40",
+42 => x"20",
+43 => x"10",
+44 => x"08",
+45 => x"04",
+46 => x"02",
+47 => x"01",
 
-		4 => "00000010", -- ADD
-		5 => x"00",
-
-		6 => "00010001", -- MOV B, ACC
-		7 => x"00",
-
-		8 => "10011001", -- MOVE [0x81], B
-		9 => x"81",
-
-		10 => "00011100", -- J 0x0A
-		11 => x"0A",
-
-		-- data
-		128 => x"0B",
-		129 => x"02",
-
-		others=>"00000000");
+		others=>"00000000"
+	);
 
 begin
 	clk1 : entity work.tb_clock port map(
@@ -51,7 +80,7 @@ begin
 		initial_contents => initial_memory
 	)
 	port map (
-		clk => not clk,
+		clk => clk,
 		we => mem_we,
 		data_out => mem_data,
 		data_in => data_bus,
@@ -73,11 +102,7 @@ begin
 		wait for 20 ns;
 		reset <= '1';
 
-		wait for 2000 ns;
-		assert mem_contents(129) = x"03" report "Memory contents was not incremented" severity failure;
-
+		wait for 80000 ns;
 		finish;
 	end process;
 end architecture;
-
-
