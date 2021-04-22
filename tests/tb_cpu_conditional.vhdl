@@ -102,7 +102,7 @@ begin
 
 	dut : entity work.cpu port map(
 		reset => reset,
-		clk => clk,
+		clk => not clk,
 		mem_we => mem_we,
 		mem_data_in => mem_data,
 		mem_data_out => data_bus,
