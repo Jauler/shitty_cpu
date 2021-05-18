@@ -42,6 +42,7 @@ It turns out, that (simple) CPUs do not require that many components after all.
 In this CPU there basically is:
 * A few Multiplexers
 * Some registers
+* Some counters
 * ALU
 * Memory
 * Controller
@@ -100,6 +101,16 @@ Again wider register can be achieved by connecting "control" (clock, write enabl
 
 ![register2](img/register2.gif)
 
+### Counter
+
+Counter is basically a register, but it additionally has increment signal.
+Value stored in the register is incremented on each rising edge of the increment signal.
+
+This components is extremely useful to hold Program Counter value, and to increment it once instruction is fetched :).
+
+This is a version of a 2-bit counter with two J-K flip flops:
+
+![counter](img/counter.gif)
 
 ### ALU
 
