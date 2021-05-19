@@ -278,6 +278,7 @@ The first suboperand S1 selects destination register like this:
 
 Examples:
 ```
+                instr.   operand.
 MOV A, B        00001000 00000000
 ADD             00000010 00000000# Note: when writing into accumulator register, source register does not matter
 MOV B, 0x15     00011001 00010101
@@ -303,6 +304,7 @@ suboperand meaning and values matches the one from register to register selectio
 
 Examples:
 ```
+                instr.   operand.
 MOV [0x15], B   01011001 00010101
 MOV [A], B      01000001 00000000
 ```
@@ -331,6 +333,7 @@ suboperand meaning and values matches the one from register to register selectio
 
 Examples:
 ```
+                instr.   operand.
 MOV B, [0x15]   10011001 00010101
 MOV B, [A]      10000001 00000000
 JMP [0x15]      10011100 00010101
@@ -344,6 +347,7 @@ All other bits are ignored therefore can be set to anything else.
 
 Examples:
 ```
+                instr.   operand.
 JZ              11000000 00000000
 ```
 
